@@ -6,8 +6,11 @@ This is a simple typescript environment allowing to use typescript classes and e
 
 ## Installation & Running the App
 
-ToDo
+1. Clone this
+2. npm i
+3. npm run start
+4. Browser -> http://127.0.0.1:8080 -> dist
 
 ## Samples
 
-ToDo
+![](./Screenshot_01.png "MyEnv")
