@@ -1,4 +1,4 @@
-import { idGenerator } from './../../utils/unique';
+import { idGenerator } from '../../utils/unique';
 import { Shape, ShapeType } from './shape';
 
 export interface RectangleStyle {

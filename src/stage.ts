@@ -1,9 +1,8 @@
-import { Rectangle } from './data/shapes/rectangle';
-import { Shapes, Collection } from './data/shapes/shapes';
+import { Shapes, Collection } from './data/shape/shapes';
 import { Subscription } from 'rxjs';
 import { select, Selection } from 'd3';
-import { Circle } from './data/shapes/circle';
-import { Shape, ShapeType } from './data/shapes/shape';
+import { Circle } from './data/shape/circle';
+import { Shape, ShapeType } from './data/shape/shape';
 
 export class Stage {
     
@@ -53,9 +52,6 @@ export class Stage {
                 case ShapeType.CIRCLE:
                     this.createCircles(id, collection.circles);
                     break;
-                case ShapeType.RECTANGLE:
-                    this.createRectangles(id, collection.rectangles);
-                    break;
             }
         });
         this.created.add(id);
@@ -64,7 +60,6 @@ export class Stage {
     private updateShapes(id: string, collection: Collection) {
         // console.trace('#updateShapes', id);
         this.updateCircles(id, collection.circles);
-        this.updateRectangles(id, collection.rectangles);
         this.created.add(id);
     }
 
@@ -94,54 +89,11 @@ export class Stage {
         this.svgg.selectAll(`${type}.${id}`)
             .data(circles as Array<Circle>)
             .classed('shape--invisible', (d: Shape) => !d.isVisible)
-            .style('stroke-width', (d: Circle) => d.style.strokeWidth)
-            .style('stroke', (d: Circle) => d.style.stroke)
-            .style('stroke-opacity', (d: Circle) => d.style.strokeOpacity)      
-            .style('fill', (d: Circle) => d.style.fill)
-            .style('fill-opacity', (d: Circle) => d.style.fillOpacity)
             .attr('cx', (d: Circle) => d.attr.cx)
             .attr('cy', (d: Circle) => d.attr.cy)
             .attr('r', (d: Circle) => d.attr.r);
     }
     
-    private createRectangles(id: string, rectangles: Array<Shape>) {
-        console.log('#createRectangles', { id: id, length: rectangles.length });
-        const type = ShapeType.RECTANGLE;
-        this.svgg.selectAll(`${type}.${id}`)
-            .data(rectangles as Array<Rectangle>)
-            .enter()
-            .append(type)
-            .attr('id', (d: Shape) => d.id)
-            .classed(id, true)
-            .style('stroke-width', (d: Rectangle) => d.style.strokeWidth)
-            .style('stroke', (d: Rectangle) => d.style.stroke)
-            .style('stroke-opacity', (d: Rectangle) => d.style.strokeOpacity)      
-            .style('fill', (d: Rectangle) => d.style.fill)
-            .style('fill-opacity', (d: Rectangle) => d.style.fillOpacity)
-            .attr('x', (d: Rectangle) => d.attr.x)
-            .attr('y', (d: Rectangle) => d.attr.y)
-            .attr('width', (d: Rectangle) => d.attr.w)
-            .attr('height', (d: Rectangle) => d.attr.h);
-        
-        this.created.add(id);
-    }
-
-    private updateRectangles(id: string, rectangles: Array<Shape>) {
-        const type = ShapeType.RECTANGLE;
-        this.svgg.selectAll(`${type}.${id}`)
-            .data(rectangles as Array<Rectangle>)
-            .classed('shape--invisible', (d: Shape) => !d.isVisible)
-            .style('stroke-width', (d: Rectangle) => d.style.strokeWidth)
-            .style('stroke', (d: Rectangle) => d.style.stroke)
-            .style('stroke-opacity', (d: Rectangle) => d.style.strokeOpacity)      
-            .style('fill', (d: Rectangle) => d.style.fill)
-            .style('fill-opacity', (d: Rectangle) => d.style.fillOpacity)
-            .attr('x', (d: Rectangle) => d.attr.x)
-            .attr('y', (d: Rectangle) => d.attr.y)
-            .attr('width', (d: Rectangle) => d.attr.w)
-            .attr('height', (d: Rectangle) => d.attr.h);
-    }
-
     private removeShapes(id: string) {
         this.svgg.selectAll(`.${id}`).remove();
     }

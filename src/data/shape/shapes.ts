@@ -1,11 +1,9 @@
 import { idGenerator } from '../../utils/unique';
 import { Observable, ReplaySubject } from 'rxjs';
 import { Circle } from './circle';
-import { Rectangle } from './rectangle';
 
 export interface Collection {
     circles: Array<Circle>;
-    rectangles: Array<Rectangle>;
 }
 
 export class Shapes {

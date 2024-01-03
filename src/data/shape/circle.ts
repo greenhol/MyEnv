@@ -1,4 +1,4 @@
-import { idGenerator } from './../../utils/unique';
+import { idGenerator } from '../../utils/unique';
 import { Shape, ShapeType } from './shape';
 
 export interface CircleStyle {
@@ -13,6 +13,7 @@ export interface CircleAttr {
     cx: number;
     cy: number;
     r: number;
+    dist: number;
 }
 
 export class Circle extends Shape {
@@ -30,24 +31,21 @@ export class Circle extends Shape {
 
     public attr: CircleAttr;
     
-    constructor(x: number, y: number, r: number) {
+    constructor(x: number, y: number, r: number, dist: number) {
         super();
         this.attr = {
             cx: x,
             cy: y,
-            r: r
+            r: r,
+            dist: dist,
         }
     }
 
-    // public setStyle(style: CircleStyle): Circle {
-    //     this.style = style;
-    //     return this;
-    // }
-
-    public setPosition(x: number, y: number, r: number) {
+    public setPosition(x: number, y: number, r: number, dist: number) {
         this.attr.cx = x;
         this.attr.cy = y;
         this.attr.r = r;
+        this.attr.dist = dist;
     }
 
     public move(x: number, y: number, r: number) {
