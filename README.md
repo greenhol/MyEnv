@@ -14,3 +14,5 @@ This is a simple typescript environment allowing to use typescript classes and e
 ## Samples
 
 ![](./Screenshot_01.png "MyEnv")
+
+![](./Screenshot_02.png "MyEnv3D")
