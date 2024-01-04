@@ -24,19 +24,37 @@ export enum SpaceElementTypeEnum {
 
 export abstract class World {
 
+    private _t = 0;
+
+    // public get t() {
+    //     return this._t;
+    // }
+
     private _cameraPosition: CameraPosition = {
         position: { x: 0, y: 0, z: -5 },
         angleX: 0,
         angleY: 0,
         angleZ: 0
     };
-    private _dots: SpaceCoord[] = [];
+    protected dots: SpaceCoord[] = [];
 
     private _state$ = new BehaviorSubject<WorldState>({
         camera: this._cameraPosition,
-        dots: this._dots,
+        dots: this.dots,
     });
     public state$: Observable<WorldState> = this._state$;
+
+    public abstract transitionToStateAt(t: number): void;
+
+    public init() {
+        this.emit();
+    }
+
+    public tick() {
+        this._t++;
+        this.transitionToStateAt(this._t);
+        this.emit();
+    }
 
     public drawOrder: SpaceElementTypeEnum[] = [
         SpaceElementTypeEnum.DOT,
@@ -66,14 +84,10 @@ export abstract class World {
         this._cameraPosition.angleZ = value;
     }
 
-    public updateDots(dots: SpaceCoord[]) {
-        this._dots = dots;
-    }
-
-    public emit() {
+    private emit() {
         this._state$.next({
             camera: this._cameraPosition,
-            dots: this._dots,
+            dots: this.dots,
         });
     }
 }

@@ -19,8 +19,8 @@ interface StagePoint extends SpaceCoord {
     dist: number;
 }
 
-const STAGE_WIDTH = 800;
-const STAGE_HEIGHT = 600;
+const STAGE_WIDTH = 1280;
+const STAGE_HEIGHT = 720;
 
 const STAGE_WIDTH_HALF = STAGE_WIDTH / 2;
 const STAGE_HEIGHT_HALF = STAGE_HEIGHT / 2;;

@@ -26,7 +26,7 @@ export class Circle extends Shape {
         stroke: '#aaa',
         strokeOpacity: 1,
         fill: '#ddd',
-        fillOpacity: 0.25
+        fillOpacity: 1
     }
 
     public attr: CircleAttr;
