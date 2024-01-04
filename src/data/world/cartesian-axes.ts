@@ -1,4 +1,4 @@
-import { SpaceCoord, World } from './world';
+import { World } from './world';
 
 export class CartesianAxes extends World {
     private static SIZE = 5;

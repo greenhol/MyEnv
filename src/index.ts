@@ -2,7 +2,7 @@ import { Stage } from './stage';
 import { ShapeType } from './data/shape/shape';
 import { CartesianAxes } from './data/world/cartesian-axes';
 import { Projector } from './projector';
-import { interval, take, timeout, timer } from 'rxjs';
+import { interval, take, timer } from 'rxjs';
 import { BellCurve } from './data/world/bell-curve';
 import { BouncingParticles } from './data/world/bouncing-particles';
 import { World } from './data/world/world';

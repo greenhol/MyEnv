@@ -1,7 +1,7 @@
 import { skip, take } from 'rxjs';
 import { AxisEnum, IdentityMatrix, Matrix, RotaryMatrix, TranslateMatrix } from './data/matrix/matrix';
 import { SpaceCoord, World } from './data/world/world';
-import { Shapes, Collection } from './data/shape/shapes';
+import { Shapes } from './data/shape/shapes';
 import { Circle } from './data/shape/circle';
 
 interface PlaneCoord {
