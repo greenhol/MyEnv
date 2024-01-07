@@ -1,8 +1,10 @@
+import { Camera } from './camera';
 import { skip, take } from 'rxjs';
 import { AxisEnum, IdentityMatrix, Matrix, RotaryMatrix, TranslateMatrix } from './data/matrix/matrix';
-import { SpaceCoord, World } from './data/world/world';
+import { World } from './data/world/world';
 import { Shapes } from './data/shape/shapes';
 import { Circle } from './data/shape/circle';
+import { SpaceCoord } from './data/types';
 
 interface PlaneCoord {
     x: number;
@@ -30,12 +32,8 @@ const STAGE_FAR = 30;
 
 export class Projector {
 
-    private rxMatrix: RotaryMatrix = new RotaryMatrix(AxisEnum.X, 0);
-    private ryMatrix: RotaryMatrix = new RotaryMatrix(AxisEnum.Y, 0);
-    private rzMatrix: RotaryMatrix = new RotaryMatrix(AxisEnum.Z, 0);
-    private tMatrix: TranslateMatrix = new TranslateMatrix({ x: 0, y: 0, z: 0 });
-
     private world: World;
+    private camera: Camera
     private _shapes: Shapes;
 
     private static spaceToPlane(coord: SpaceCoord): PlaneCoord {
@@ -71,21 +69,14 @@ export class Projector {
         return Projector.planeToPixel(Projector.spaceToPlane(coord));
     }
 
-    constructor(world: World) {
-        this.world = world
+    constructor(world: World, camera: Camera) {
+        this.world = world;
+        this.camera = camera;
 
         this.world.state$.pipe(take(1)).subscribe(state => {
-            this.rxMatrix = new RotaryMatrix(AxisEnum.X, state.camera.angleX);
-            this.ryMatrix = new RotaryMatrix(AxisEnum.Y, state.camera.angleY);
-            this.rzMatrix = new RotaryMatrix(AxisEnum.Z, state.camera.angleZ);
-            this.tMatrix = new TranslateMatrix(state.camera.position);
             this.createShapes(this.createData(state.dots));
         });
         this.world.state$.pipe(skip(1)).subscribe(state => {
-            this.rxMatrix = new RotaryMatrix(AxisEnum.X, state.camera.angleX);
-            this.ryMatrix = new RotaryMatrix(AxisEnum.Y, state.camera.angleY);
-            this.rzMatrix = new RotaryMatrix(AxisEnum.Z, state.camera.angleZ);
-            this.tMatrix = new TranslateMatrix(state.camera.position);
             this.updateShapes(this.createData(state.dots));
         });
     }
@@ -96,11 +87,16 @@ export class Projector {
 
     private createData(dots: SpaceCoord[]): StagePoint[] {
 
+        const rxMatrix = new RotaryMatrix(AxisEnum.X, this.camera.angleX);
+        const ryMatrix = new RotaryMatrix(AxisEnum.Y, this.camera.angleY);
+        const rzMatrix = new RotaryMatrix(AxisEnum.Z, this.camera.angleZ);
+        const tMatrix = new TranslateMatrix(this.camera.position);
+
         let myMatrix = new IdentityMatrix();
-        myMatrix = Matrix.multiply(myMatrix, this.rzMatrix);
-        myMatrix = Matrix.multiply(myMatrix, this.ryMatrix);
-        myMatrix = Matrix.multiply(myMatrix, this.rxMatrix);
-        myMatrix = Matrix.multiply(myMatrix, this.tMatrix);
+        myMatrix = Matrix.multiply(myMatrix, rzMatrix);
+        myMatrix = Matrix.multiply(myMatrix, ryMatrix);
+        myMatrix = Matrix.multiply(myMatrix, rxMatrix);
+        myMatrix = Matrix.multiply(myMatrix, tMatrix);
         myMatrix = myMatrix.inv!;
 
         // Dots

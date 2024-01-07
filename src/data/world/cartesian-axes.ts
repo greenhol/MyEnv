@@ -10,9 +10,6 @@ export class CartesianAxes extends World {
     constructor() {
         super();
 
-        this.updateCameraAngleX(this.angleX);
-        this.updateCameraAngleY(this.angleY);
-
         this.dots.push({ x: 0, y: 0, z: 0 });
         for (let i = CartesianAxes.DIST; i <= CartesianAxes.SIZE; i += CartesianAxes.DIST) {
             this.dots.push({ x: -i, y: 0, z: 0 });
@@ -25,8 +22,9 @@ export class CartesianAxes extends World {
         this.init();
     }
 
+    public name: string = "Cartesian Axes";
+
     public transitionToStateAt(t: number): void {
-        this.updateCameraAngleY(this.angleY + t/15);
-        this.updateCameraAngleZ(t/25);
+        // No Nothing
     }
 }

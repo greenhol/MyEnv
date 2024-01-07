@@ -1,4 +1,4 @@
-import { SpaceCoord } from "../world/world";
+import { SpaceCoord } from '../types';
 
 export enum AxisEnum {
     'X',

@@ -1,4 +1,5 @@
-import { World, SpaceCoord } from './world';
+import { SpaceCoord } from '../types';
+import { World } from './world';
 
 interface Particle {
   position: SpaceCoord;
@@ -16,8 +17,6 @@ export class BouncingParticles extends World {
 
   constructor() {
     super();
-
-    this.updateCameraAngleX(Math.PI * 6 / 5 - Math.PI);
 
     this.particles = [];
     for (let i = 0; i < 1500; i++) {
@@ -39,10 +38,10 @@ export class BouncingParticles extends World {
     this.init();
   }
 
+  public name: string = "Bouncing Particles";
+
   public transitionToStateAt(t: number): void {
     this.particles.forEach((particle: Particle) => {
-
-      this.updateCameraAngleY(t * Math.PI / 180);
 
       if (particle.staticX && particle.staticY && particle.staticZ) return;
 

@@ -1,4 +1,5 @@
-import { World, SpaceCoord } from './world';
+import { SpaceCoord } from '../types';
+import { World } from './world';
 
 export class BellCurve extends World {
     private static SIZE = 15;
@@ -15,13 +16,12 @@ export class BellCurve extends World {
         this.init();
     }
 
+    public name: string = "Bell Curve";
+
     public transitionToStateAt(t: number): void {        
         const amp = 3 * Math.sin(t * Math.PI / 180);
         this.dots.forEach((dot: SpaceCoord) => {
             dot.y = amp * Math.exp(-(dot.x * dot.x + dot.z * dot.z));
         });
-        this.updateCameraAngleX(t * Math.PI / 180);
-        this.updateCameraAngleY(0.6253 * t * Math.PI / 180);
-        this.updateCameraAngleZ(1.234 * t * Math.PI / 180);
     }
 }
