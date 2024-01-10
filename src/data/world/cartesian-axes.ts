@@ -25,6 +25,6 @@ export class CartesianAxes extends World {
     public name: string = "Cartesian Axes";
 
     public transitionToStateAt(t: number): void {
-        // No Nothing
+        // Do Nothing
     }
 }

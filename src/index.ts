@@ -9,6 +9,9 @@ import { World } from './data/world/world';
 import { RandomPoints } from './data/world/random-points';
 import { Camera } from './camera';
 import { CameraKeyboardConnector } from './cameraKeyboardConnector';
+import { Chart3DLifeTable } from './data/world/chart3DLifeTable';
+import { Cube } from './data/world/cube';
+import { Grid } from './data/world/grid';
 
 var sheet = window.document.styleSheets[0];
 sheet.insertRule('.shape--invisible { visibility: hidden;}', sheet.cssRules.length);
@@ -26,9 +29,13 @@ const cameraInfoArea = document.getElementById("cameraInfo");
 function getWorldById(worldId: number): World {
     switch (worldId) {
         case 1: return new CartesianAxes();
-        case 2: return new BellCurve();
-        case 3: return new BouncingParticles();
-        case 4: return new RandomPoints();
+        case 2: return new Cube();
+        case 3: return new Grid();
+        case 4: return new BellCurve();
+        case 5: return new BouncingParticles();
+        case 6: return new RandomPoints();
+        case 7: return new Chart3DLifeTable();
+        
         default: {
             console.error("Unnown world id", worldId);
             return new CartesianAxes();
@@ -81,6 +88,9 @@ document.addEventListener(
                 case "2": switchWorld(2); break;
                 case "3": switchWorld(3); break;
                 case "4": switchWorld(4); break;
+                case "5": switchWorld(5); break;
+                case "6": switchWorld(6); break;
+                case "7": switchWorld(7); break;
                 default: console.log(`unhandled key ${event.key}`);
             }
         }
