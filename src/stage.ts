@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { select, Selection } from 'd3';
 import { Circle } from './data/shape/circle';
 import { Shape, ShapeType } from './data/shape/shape';
+import { Path } from './data/shape/path';
 
 export class Stage {
     
@@ -52,6 +53,9 @@ export class Stage {
                 case ShapeType.CIRCLE:
                     this.createCircles(id, collection.circles);
                     break;
+                case ShapeType.PATH:
+                    this.createPaths(id, collection.paths);
+                    break;
             }
         });
         this.created.add(id);
@@ -60,6 +64,7 @@ export class Stage {
     private updateShapes(id: string, collection: Collection) {
         // console.trace('#updateShapes', id);
         this.updateCircles(id, collection.circles);
+        this.updatePaths(id, collection.paths);
         this.created.add(id);
     }
 
@@ -84,6 +89,25 @@ export class Stage {
         this.created.add(id);
     }
 
+    private createPaths(id: string, paths: Array<Shape>) {
+        console.log('#createPaths', { id: id, length: paths.length });
+        const type = ShapeType.PATH;
+        this.svgg.selectAll(`${type}.${id}`)
+            .data(paths as Array<Path>)
+            .enter()
+            .append(type)
+            .attr('id', (d: Path) => d.id)
+            .classed(id, true)
+            .style('stroke-width', (d: Path) => d.style.strokeWidth)
+            .style('stroke', (d: Path) => d.style.stroke)
+            .style('stroke-opacity', (d: Path) => d.style.strokeOpacity)      
+            .style('fill', (d: Path) => d.style.fill)
+            .style('fill-opacity', (d: Path) => d.style.fillOpacity)
+            .attr('d', (d: Path) => d.attr.d);
+        
+        this.created.add(id);
+    }
+
     private updateCircles(id: string, circles: Array<Shape>) {
         const type = ShapeType.CIRCLE;
         this.svgg.selectAll(`${type}.${id}`)
@@ -92,6 +116,14 @@ export class Stage {
             .attr('cx', (d: Circle) => d.attr.cx)
             .attr('cy', (d: Circle) => d.attr.cy)
             .attr('r', (d: Circle) => d.attr.r);
+    }
+
+    private updatePaths(id: string, paths: Array<Shape>) {
+        const type = ShapeType.PATH;
+        this.svgg.selectAll(`${type}.${id}`)
+            .data(paths as Array<Path>)
+            .classed('shape--invisible', (d: Shape) => !d.isVisible)
+            .attr('d', (d: Path) => d.attr.d);
     }
     
     private removeShapes(id: string) {

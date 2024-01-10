@@ -1,6 +1,7 @@
 export enum ShapeType {
     CIRCLE = 'circle',
     RECTANGLE = 'rect',
+    PATH = 'path',
 }
 
 export abstract class Shape {

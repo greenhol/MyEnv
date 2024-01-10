@@ -1,10 +1,11 @@
 import { Camera } from './camera';
 import { skip, take } from 'rxjs';
 import { AxisEnum, IdentityMatrix, Matrix, RotaryMatrix, TranslateMatrix } from './data/matrix/matrix';
-import { World } from './data/world/world';
+import { World, WorldState } from './data/world/world';
 import { Shapes } from './data/shape/shapes';
 import { Circle } from './data/shape/circle';
-import { SpaceCoord } from './data/types';
+import { SpaceCoord, SpacePath } from './data/types';
+import { Path } from './data/shape/path';
 
 interface PlaneCoord {
     x: number;
@@ -19,6 +20,16 @@ interface PixelCoord {
 interface StagePoint extends SpaceCoord {
     pixel: PixelCoord;
     dist: number;
+}
+
+interface StagePath extends SpacePath {
+    d: string;
+    dist: number;
+}
+
+interface ProjectedData {
+    dots: StagePoint[];
+    paths: StagePath[];
 }
 
 const STAGE_WIDTH = 1280;
@@ -74,10 +85,10 @@ export class Projector {
         this.camera = camera;
 
         this.world.state$.pipe(take(1)).subscribe(state => {
-            this.createShapes(this.createData(state.dots));
+            this.createShapes(this.createData(state));
         });
         this.world.state$.pipe(skip(1)).subscribe(state => {
-            this.updateShapes(this.createData(state.dots));
+            this.updateShapes(this.createData(state));
         });
     }
 
@@ -85,7 +96,7 @@ export class Projector {
         return this._shapes;
     }
 
-    private createData(dots: SpaceCoord[]): StagePoint[] {
+    private createData(worldState: WorldState): ProjectedData {
 
         const rxMatrix = new RotaryMatrix(AxisEnum.X, this.camera.angleX);
         const ryMatrix = new RotaryMatrix(AxisEnum.Y, this.camera.angleY);
@@ -100,7 +111,7 @@ export class Projector {
         myMatrix = myMatrix.inv!;
 
         // Dots
-        let projectedDots: StagePoint[] = dots.map((coord: SpaceCoord): StagePoint => {
+        let projectedDots: StagePoint[] = worldState.dots.map((coord: SpaceCoord): StagePoint => {
             let v = myMatrix.vectorMultiply(coord);
             return {
                 pixel: Projector.spaceToPixel(v),
@@ -112,35 +123,71 @@ export class Projector {
         });
 
         projectedDots.sort((a: StagePoint, b: StagePoint) => a.dist - b.dist);
-        return projectedDots;
+
+        let projectedPaths: StagePath[] = worldState.paths.map((spacePath: SpacePath): StagePath => {
+            let point = Projector.spaceToPixel(myMatrix.vectorMultiply(spacePath.coords[0]));
+            let minDist = Projector.distanceToCamera(myMatrix.vectorMultiply(spacePath.coords[0]));
+            let p = 'M' + point.left + ' ' + point.top + ' ';
+            for (let i = 1; i < spacePath.coords.length; i++) {
+                point = Projector.spaceToPixel(myMatrix.vectorMultiply(spacePath.coords[i]));
+                let dist = Projector.distanceToCamera(myMatrix.vectorMultiply(spacePath.coords[i]));
+                minDist = Math.min(minDist, dist);
+                p += 'L' + point.left + ' ' + point.top + ' ';
+            }
+            return {
+                coords: spacePath.coords,
+                d: p + 'Z',
+                dist: minDist,
+            };
+        });
+
+        return {
+            dots: projectedDots,
+            paths: projectedPaths,
+        };
     }
 
-    private createShapes(projectedDots: StagePoint[]) {
+    private createShapes(data: ProjectedData) {
         this._shapes = new Shapes(
-            'cartesian',
+            'projected',
             {
-                circles: projectedDots.map((dot: StagePoint): Circle => {
+                circles: data.dots.map((dot: StagePoint): Circle => {
                     return new Circle(
                         dot.pixel.left,
                         dot.pixel.top,
                         this.getRadiusFromDist(dot.dist),
                         dot.dist,
                     )
+                }),
+                paths: data.paths.map((path: StagePath): Path => {
+                    return new Path(
+                        path.d,
+                        path.dist,
+                    )
                 })
-            }
+            },
         );
     }
 
-    private updateShapes(projectedDots: StagePoint[]) {
+    private updateShapes(data: ProjectedData) {
         this._shapes.update((shapes) => {
             shapes.circles.forEach((circle, index) => {
-                let dot = projectedDots[index];
+                let projectedDot = data.dots[index];
                 circle.setPosition(
-                    dot.pixel.left,
-                    dot.pixel.top,
-                    this.getRadiusFromDist(dot.dist),
-                    dot.dist,
+                    projectedDot.pixel.left,
+                    projectedDot.pixel.top,
+                    this.getRadiusFromDist(projectedDot.dist),
+                    projectedDot.dist,
                 );
+                circle.setVisible(projectedDot.dist > 0);
+            });
+            shapes.paths.forEach((path, index) => {
+                let projectedPath = data.paths[index];
+                path.setPath(
+                    projectedPath.d,
+                    projectedPath.dist,
+                )
+                path.setVisible(projectedPath.dist > 0);
             });
         });
     }

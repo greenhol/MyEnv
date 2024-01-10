@@ -1,8 +1,9 @@
 import { BehaviorSubject, Observable } from 'rxjs';
-import { SpaceCoord } from '../types';
+import { SpaceCoord, SpacePath } from '../types';
 
 export interface WorldState {
     dots: SpaceCoord[];
+    paths: SpacePath[];
 }
 
 export enum SpaceElementTypeEnum {
@@ -14,9 +15,11 @@ export abstract class World {
     private _t = 0;
 
     protected dots: SpaceCoord[] = [];
+    protected paths: SpacePath[] = [];
 
     private _state$ = new BehaviorSubject<WorldState>({
         dots: this.dots,
+        paths: this.paths,
     });
     public state$: Observable<WorldState> = this._state$;
 
@@ -41,6 +44,7 @@ export abstract class World {
     private emit() {
         this._state$.next({
             dots: this.dots,
+            paths: this.paths,
         });
     }
 }

@@ -3,3 +3,7 @@ export interface SpaceCoord {
     y: number;
     z: number;
 }
+
+export interface SpacePath {
+    coords: SpaceCoord[];
+}

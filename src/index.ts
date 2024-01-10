@@ -47,7 +47,7 @@ function runWorld(worldId: number) {
     const world = getWorldById(worldId)
     updateWorldTitle(world.name)
     const projector = new Projector(world, camera);
-    stage.registerShapes(projector.shapes, new Set([ShapeType.CIRCLE, ShapeType.RECTANGLE]));
+    stage.registerShapes(projector.shapes, new Set([ShapeType.PATH, ShapeType.CIRCLE]));
 
     subscription = interval(40)
         .pipe(takeUntil(abort$))

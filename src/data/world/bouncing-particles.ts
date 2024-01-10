@@ -13,10 +13,59 @@ export class BouncingParticles extends World {
   private static ACCELERATION = 0.01;
   private static BOX_X = 3;
   private static BOX_Z = 3;
+  private static BOX_HEIGHT = 5;
   private particles: Particle[];
 
   constructor() {
     super();
+
+    this.paths = [
+      {
+        coords: [
+          {x: -BouncingParticles.BOX_X, y: 0, z: -BouncingParticles.BOX_Z},
+          {x: BouncingParticles.BOX_X, y: 0, z: -BouncingParticles.BOX_Z},
+          {x: BouncingParticles.BOX_X, y: 0, z: BouncingParticles.BOX_Z},
+          {x: -BouncingParticles.BOX_X, y: 0, z: BouncingParticles.BOX_Z},
+          {x: -BouncingParticles.BOX_X, y: 0, z: -BouncingParticles.BOX_Z},
+        ],
+      },
+      {
+        coords: [
+          {x: -BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: -BouncingParticles.BOX_Z},
+          {x: -BouncingParticles.BOX_X, y: 0, z: -BouncingParticles.BOX_Z},
+          {x: BouncingParticles.BOX_X, y: 0, z: -BouncingParticles.BOX_Z},
+          {x: BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: -BouncingParticles.BOX_Z},
+          {x: -BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: -BouncingParticles.BOX_Z},
+        ],
+      },
+      {
+        coords: [
+          {x: -BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: -BouncingParticles.BOX_Z},
+          {x: -BouncingParticles.BOX_X, y: 0, z: -BouncingParticles.BOX_Z},
+          {x: -BouncingParticles.BOX_X, y: 0, z: BouncingParticles.BOX_Z},
+          {x: -BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: BouncingParticles.BOX_Z},
+          {x: -BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: -BouncingParticles.BOX_Z},
+        ],
+      },
+      {
+        coords: [
+          {x: -BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: BouncingParticles.BOX_Z},
+          {x: -BouncingParticles.BOX_X, y: 0, z: BouncingParticles.BOX_Z},
+          {x: BouncingParticles.BOX_X, y: 0, z: BouncingParticles.BOX_Z},
+          {x: BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: BouncingParticles.BOX_Z},
+          {x: -BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: BouncingParticles.BOX_Z},
+        ],
+      },
+      {
+        coords: [
+          {x: BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: BouncingParticles.BOX_Z},
+          {x: BouncingParticles.BOX_X, y: 0, z: BouncingParticles.BOX_Z},
+          {x: BouncingParticles.BOX_X, y: 0, z: -BouncingParticles.BOX_Z},
+          {x: BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: -BouncingParticles.BOX_Z},
+          {x: BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: BouncingParticles.BOX_Z},
+        ],
+      }
+    ];
 
     this.particles = [];
     for (let i = 0; i < 1500; i++) {
