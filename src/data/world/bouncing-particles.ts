@@ -28,6 +28,7 @@ export class BouncingParticles extends World {
           {x: -BouncingParticles.BOX_X, y: 0, z: BouncingParticles.BOX_Z},
           {x: -BouncingParticles.BOX_X, y: 0, z: -BouncingParticles.BOX_Z},
         ],
+        close: true,
       },
       {
         coords: [
@@ -37,6 +38,7 @@ export class BouncingParticles extends World {
           {x: BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: -BouncingParticles.BOX_Z},
           {x: -BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: -BouncingParticles.BOX_Z},
         ],
+        close: true,
       },
       {
         coords: [
@@ -46,6 +48,7 @@ export class BouncingParticles extends World {
           {x: -BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: BouncingParticles.BOX_Z},
           {x: -BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: -BouncingParticles.BOX_Z},
         ],
+        close: true,
       },
       {
         coords: [
@@ -55,6 +58,7 @@ export class BouncingParticles extends World {
           {x: BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: BouncingParticles.BOX_Z},
           {x: -BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: BouncingParticles.BOX_Z},
         ],
+        close: true,
       },
       {
         coords: [
@@ -64,6 +68,7 @@ export class BouncingParticles extends World {
           {x: BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: -BouncingParticles.BOX_Z},
           {x: BouncingParticles.BOX_X, y: BouncingParticles.BOX_HEIGHT, z: BouncingParticles.BOX_Z},
         ],
+        close: true,
       }
     ];
 

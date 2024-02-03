@@ -8,14 +8,16 @@ interface CameraPosition {
     angleZ: number;
 }
 
+export const ONE_DEGREE = Math.PI / 180;
+
 export class Camera {
 
     private static defaultPosition(): CameraPosition {
         return {
-            position: { x: 0, y: 0, z: -5 },
-            angleX: 0,
-            angleY: 0,
-            angleZ: 0
+            position: { x: 0, y: 0, z: -7.5 },
+            angleX: 20 * ONE_DEGREE,
+            angleY: -30 * ONE_DEGREE,
+            angleZ: 0 * ONE_DEGREE,
         };
     }
 

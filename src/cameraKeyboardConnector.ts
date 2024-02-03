@@ -1,4 +1,4 @@
-import { Camera } from './camera';
+import { Camera, ONE_DEGREE } from './camera';
 
 enum ValidKeys {
     Escape = 'Escape',
@@ -15,8 +15,6 @@ enum ValidKeys {
     Comma = ',',
     Dot = '.',
 }
-
-const ONE_DEGREE = Math.PI / 180;
 
 export class CameraKeyboardConnector {
 

@@ -6,4 +6,5 @@ export interface SpaceCoord {
 
 export interface SpacePath {
     coords: SpaceCoord[];
+    close: boolean;
 }

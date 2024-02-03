@@ -12,6 +12,7 @@ import { CameraKeyboardConnector } from './cameraKeyboardConnector';
 import { Chart3DLifeTable } from './data/world/chart3DLifeTable';
 import { Cube } from './data/world/cube';
 import { Grid } from './data/world/grid';
+import { HilbertCurve } from './data/world/hilbert-curve';
 
 var sheet = window.document.styleSheets[0];
 sheet.insertRule('.shape--invisible { visibility: hidden;}', sheet.cssRules.length);
@@ -34,7 +35,8 @@ function getWorldById(worldId: number): World {
         case 4: return new BellCurve();
         case 5: return new BouncingParticles();
         case 6: return new RandomPoints();
-        case 7: return new Chart3DLifeTable();
+        case 7: return new HilbertCurve();
+        case 8: return new Chart3DLifeTable();
         
         default: {
             console.error("Unnown world id", worldId);
@@ -91,6 +93,7 @@ document.addEventListener(
                 case "5": switchWorld(5); break;
                 case "6": switchWorld(6); break;
                 case "7": switchWorld(7); break;
+                case "8": switchWorld(8); break;
                 default: console.log(`unhandled key ${event.key}`);
             }
         }

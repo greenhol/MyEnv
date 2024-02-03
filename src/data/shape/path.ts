@@ -20,7 +20,7 @@ export class Path extends Shape {
     public type = ShapeType.PATH;
 
     public style: PathStyle = {
-        strokeWidth: 0.5,
+        strokeWidth: 1.5,
         stroke: '#aaa',
         strokeOpacity: 1,
         fill: 'none',

@@ -136,7 +136,8 @@ export class Projector {
             }
             return {
                 coords: spacePath.coords,
-                d: p + 'Z',
+                close: spacePath.close,
+                d: spacePath.close ? p + 'Z' : p,
                 dist: minDist,
             };
         });
