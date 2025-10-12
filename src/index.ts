@@ -13,6 +13,7 @@ import { Chart3DLifeTable } from './data/world/chart3DLifeTable';
 import { Cube } from './data/world/cube';
 import { Grid } from './data/world/grid';
 import { HilbertCurve } from './data/world/hilbert-curve';
+import { DoublePendulumLive } from './data/world/double-pendulum-live';
 
 var sheet = window.document.styleSheets[0];
 sheet.insertRule('.shape--invisible { visibility: hidden;}', sheet.cssRules.length);
@@ -37,6 +38,7 @@ function getWorldById(worldId: number): World {
         case 6: return new RandomPoints();
         case 7: return new HilbertCurve();
         case 8: return new Chart3DLifeTable();
+        case 9: return new DoublePendulumLive();
         
         default: {
             console.error("Unnown world id", worldId);
@@ -94,6 +96,7 @@ document.addEventListener(
                 case "6": switchWorld(6); break;
                 case "7": switchWorld(7); break;
                 case "8": switchWorld(8); break;
+                case "9": switchWorld(9); break;
                 default: console.log(`unhandled key ${event.key}`);
             }
         }
