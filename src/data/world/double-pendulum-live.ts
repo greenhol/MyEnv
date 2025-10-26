@@ -1,5 +1,15 @@
+import { ModuleConfig } from '../../config/module-config';
 import { SpaceCoord, SpacePath } from './../types';
 import { World } from './world';
+
+interface DoublePendulumConfiguration {
+  friction: number;
+}
+
+const CONFIG = new ModuleConfig<DoublePendulumConfiguration>(
+  { friction: 1 },
+  "doublePendulumConfiguration",
+)
 
 const M1 = 1.0; // Mass of pendulum 1
 const M2 = 1.0; // Mass of pendulum 2
@@ -16,79 +26,29 @@ interface PendulumState {
 
 export class DoublePendulumLive extends World {
 
-  pendulumCnt = 45;
-  distance = 3;
+  zDistance = 5;
   current: PendulumState[] = [];
-  origins: SpaceCoord[] = [
-    { x: -2 * this.distance, y: -1 * this.distance, z: -1 * this.distance },
-    { x: -1 * this.distance, y: -1 * this.distance, z: -1 * this.distance },
-    { x: 0 * this.distance, y: -1 * this.distance, z: -1 * this.distance },
-    { x: 1 * this.distance, y: -1 * this.distance, z: -1 * this.distance },
-    { x: 2 * this.distance, y: -1 * this.distance, z: -1 * this.distance },
-
-    { x: -2 * this.distance, y: 0 * this.distance, z: -1 * this.distance },
-    { x: -1 * this.distance, y: 0 * this.distance, z: -1 * this.distance },
-    { x: 0 * this.distance, y: 0 * this.distance, z: -1 * this.distance },
-    { x: 1 * this.distance, y: 0 * this.distance, z: -1 * this.distance },
-    { x: 2 * this.distance, y: 0 * this.distance, z: -1 * this.distance },
-
-    { x: -2 * this.distance, y: 1 * this.distance, z: -1 * this.distance },
-    { x: -1 * this.distance, y: 1 * this.distance, z: -1 * this.distance },
-    { x: 0 * this.distance, y: 1 * this.distance, z: -1 * this.distance },
-    { x: 1 * this.distance, y: 1 * this.distance, z: -1 * this.distance },
-    { x: 2 * this.distance, y: 1 * this.distance, z: -1 * this.distance },
-
-
-    { x: -2 * this.distance, y: -1 * this.distance, z: 0 * this.distance },
-    { x: -1 * this.distance, y: -1 * this.distance, z: 0 * this.distance },
-    { x: 0 * this.distance, y: -1 * this.distance, z: 0 * this.distance },
-    { x: 1 * this.distance, y: -1 * this.distance, z: 0 * this.distance },
-    { x: 2 * this.distance, y: -1 * this.distance, z: 0 * this.distance },
-
-    { x: -2 * this.distance, y: 0 * this.distance, z: 0 * this.distance },
-    { x: -1 * this.distance, y: 0 * this.distance, z: 0 * this.distance },
-    { x: 0 * this.distance, y: 0 * this.distance, z: 0 * this.distance },
-    { x: 1 * this.distance, y: 0 * this.distance, z: 0 * this.distance },
-    { x: 2 * this.distance, y: 0 * this.distance, z: 0 * this.distance },
-
-    { x: -2 * this.distance, y: 1 * this.distance, z: 0 * this.distance },
-    { x: -1 * this.distance, y: 1 * this.distance, z: 0 * this.distance },
-    { x: 0 * this.distance, y: 1 * this.distance, z: 0 * this.distance },
-    { x: 1 * this.distance, y: 1 * this.distance, z: 0 * this.distance },
-    { x: 2 * this.distance, y: 1 * this.distance, z: 0 * this.distance },
-
-
-    { x: -2 * this.distance, y: -1 * this.distance, z: 1 * this.distance },
-    { x: -1 * this.distance, y: -1 * this.distance, z: 1 * this.distance },
-    { x: 0 * this.distance, y: -1 * this.distance, z: 1 * this.distance },
-    { x: 1 * this.distance, y: -1 * this.distance, z: 1 * this.distance },
-    { x: 2 * this.distance, y: -1 * this.distance, z: 1 * this.distance },
-
-    { x: -2 * this.distance, y: 0 * this.distance, z: 1 * this.distance },
-    { x: -1 * this.distance, y: 0 * this.distance, z: 1 * this.distance },
-    { x: 0 * this.distance, y: 0 * this.distance, z: 1 * this.distance },
-    { x: 1 * this.distance, y: 0 * this.distance, z: 1 * this.distance },
-    { x: 2 * this.distance, y: 0 * this.distance, z: 1 * this.distance },
-
-    { x: -2 * this.distance, y: 1 * this.distance, z: 1 * this.distance },
-    { x: -1 * this.distance, y: 1 * this.distance, z: 1 * this.distance },
-    { x: 0 * this.distance, y: 1 * this.distance, z: 1 * this.distance },
-    { x: 1 * this.distance, y: 1 * this.distance, z: 1 * this.distance },
-    { x: 2 * this.distance, y: 1 * this.distance, z: 1 * this.distance },
-  ];
+  origins: SpaceCoord[] = [];
 
   constructor() {
     super()
 
-    for (let i = 0; i < this.pendulumCnt; i++) {
-      const state = {
-        theta1: -Math.PI / 2 + Math.random() * Math.PI,
-        theta2: -Math.PI / 2 + Math.random() * Math.PI,
-        omega1: 0,
-        omega2: 0,
-      };
-      this.current.push(state)
+    for (let x = -17; x < 18; x += 4) {
+      for (let y = -9; y < 10; y += 4) {
+        for (let z = 1; z < 2; z++) {
+          this.origins.push(
+            { x: x, y: y, z: z * this.zDistance }
+          )
+          this.current.push({
+            theta1: x / Math.PI / 2,
+            theta2: y / Math.PI / 2,
+            omega1: (z - 1) * 1,
+            omega2: -(z - 1) * 1,
+          });
+        }
+      }
     }
+
     this.updateWithCurrent();
 
     this.init();
@@ -102,6 +62,8 @@ export class DoublePendulumLive extends World {
 
     this.current = this.current.map((state: PendulumState): PendulumState => {
       const nextStep = this.rk4Step(this.doublePendulumODE, time, this.pendulumStateAsArray(state), dt);
+      nextStep[2] *= CONFIG.data.friction;
+      nextStep[3] *= CONFIG.data.friction;
       return this.pendulumStateFromArray(nextStep);
     });
     this.updateWithCurrent();

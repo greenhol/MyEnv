@@ -14,6 +14,16 @@ import { Cube } from './data/world/cube';
 import { Grid } from './data/world/grid';
 import { HilbertCurve } from './data/world/hilbert-curve';
 import { DoublePendulumLive } from './data/world/double-pendulum-live';
+import { ModuleConfig } from './config/module-config';
+
+interface MainConfig {
+    currentWorld: number,
+}
+
+const MAIN_CONFIG = new ModuleConfig<MainConfig>(
+    { currentWorld: 1 },
+    "mainConfig",
+)
 
 var sheet = window.document.styleSheets[0];
 sheet.insertRule('.shape--invisible { visibility: hidden;}', sheet.cssRules.length);
@@ -39,7 +49,6 @@ function getWorldById(worldId: number): World {
         case 7: return new HilbertCurve();
         case 8: return new Chart3DLifeTable();
         case 9: return new DoublePendulumLive();
-        
         default: {
             console.error("Unnown world id", worldId);
             return new CartesianAxes();
@@ -47,8 +56,8 @@ function getWorldById(worldId: number): World {
     }
 }
 
-function runWorld(worldId: number) {
-    const world = getWorldById(worldId)
+function runWorld() {
+    const world = getWorldById(MAIN_CONFIG.data.currentWorld)
     updateWorldTitle(world.name)
     const projector = new Projector(world, camera);
     stage.registerShapes(projector.shapes, new Set([ShapeType.PATH, ShapeType.CIRCLE]));
@@ -68,10 +77,11 @@ function runWorld(worldId: number) {
 
 function switchWorld(worldId: number) {
     console.log(`switching world to (${worldId})`);
+    MAIN_CONFIG.data.currentWorld = worldId;
     abort$.next();
     subscription.unsubscribe();
     timer(100).subscribe(() => {
-        runWorld(worldId);
+        runWorld();
     });
 }
 
@@ -112,4 +122,4 @@ camera.state$.subscribe({
     }
 });
 
-runWorld(1);
+runWorld();
