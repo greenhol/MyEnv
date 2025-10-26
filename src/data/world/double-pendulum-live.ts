@@ -2,20 +2,26 @@ import { ModuleConfig } from '../../config/module-config';
 import { SpaceCoord, SpacePath } from './../types';
 import { World } from './world';
 
-interface DoublePendulumConfiguration {
-  friction: number;
+interface DoublePendulumConfig {
+  M1: number; // Mass of pendulum 1
+  M2: number; // Mass of pendulum 2
+  L1: number; // Length of pendulum 1
+  L2: number; // Length of pendulum 2
+  friction: number; // friction of the system
 }
 
-const CONFIG = new ModuleConfig<DoublePendulumConfiguration>(
-  { friction: 1 },
-  "doublePendulumConfiguration",
+const CONFIG = new ModuleConfig<DoublePendulumConfig>(
+  {
+    M1: 1,
+    M2: 1,
+    L1: 1,
+    L2: 1,
+    friction: 1,
+  },
+  "doublePendulumConfig",
 )
 
-const M1 = 1.0; // Mass of pendulum 1
-const M2 = 1.0; // Mass of pendulum 2
-const L1 = 1.0; // Length of pendulum 1
-const L2 = 1.0; // Length of pendulum 2
-const AG = 9.81; // Acceleration due to gravity
+const GRAVITY_ACC = 9.81; // Acceleration due to gravity
 
 interface PendulumState {
   theta1: number;
@@ -84,10 +90,10 @@ export class DoublePendulumLive extends World {
   }
 
   private toCartesian(theta1: number, theta2: number): [number, number, number, number] {
-    const x1 = L1 * Math.sin(theta1);
-    const y1 = -L1 * Math.cos(theta1);
-    const x2 = x1 + L2 * Math.sin(theta2);
-    const y2 = y1 - L2 * Math.cos(theta2);
+    const x1 = CONFIG.data.L1 * Math.sin(theta1);
+    const y1 = -CONFIG.data.L1 * Math.cos(theta1);
+    const x2 = x1 + CONFIG.data.L2 * Math.sin(theta2);
+    const y2 = y1 - CONFIG.data.L2 * Math.cos(theta2);
 
     return [x1, y1, x2, y2];
   }
@@ -112,17 +118,17 @@ export class DoublePendulumLive extends World {
     const cosDeltaTheta = Math.cos(deltaTheta);
 
     const dOmega1dt =
-      (M2 * L1 * omega1 ** 2 * sinDeltaTheta * cosDeltaTheta +
-        M2 * AG * Math.sin(theta2) * cosDeltaTheta +
-        M2 * L2 * omega2 ** 2 * sinDeltaTheta -
-        (M1 + M2) * AG * Math.sin(theta1)) /
-      (L1 * ((M1 + M2) - M2 * cosDeltaTheta ** 2));
+      (CONFIG.data.M2 * CONFIG.data.L1 * omega1 ** 2 * sinDeltaTheta * cosDeltaTheta +
+        CONFIG.data.M2 * GRAVITY_ACC * Math.sin(theta2) * cosDeltaTheta +
+        CONFIG.data.M2 * CONFIG.data.L2 * omega2 ** 2 * sinDeltaTheta -
+        (CONFIG.data.M1 + CONFIG.data.M2) * GRAVITY_ACC * Math.sin(theta1)) /
+      (CONFIG.data.L1 * ((CONFIG.data.M1 + CONFIG.data.M2) - CONFIG.data.M2 * cosDeltaTheta ** 2));
 
     const dOmega2dt =
-      (-M2 * L2 * omega2 ** 2 * sinDeltaTheta * cosDeltaTheta +
-        (M1 + M2) * (AG * Math.sin(theta1) * cosDeltaTheta - L1 * omega1 ** 2 * sinDeltaTheta) -
-        (M1 + M2) * AG * Math.sin(theta2)) /
-      (L2 * ((M1 + M2) - M2 * cosDeltaTheta ** 2));
+      (-CONFIG.data.M2 * CONFIG.data.L2 * omega2 ** 2 * sinDeltaTheta * cosDeltaTheta +
+        (CONFIG.data.M1 + CONFIG.data.M2) * (GRAVITY_ACC * Math.sin(theta1) * cosDeltaTheta - CONFIG.data.L1 * omega1 ** 2 * sinDeltaTheta) -
+        (CONFIG.data.M1 + CONFIG.data.M2) * GRAVITY_ACC * Math.sin(theta2)) /
+      (CONFIG.data.L2 * ((CONFIG.data.M1 + CONFIG.data.M2) - CONFIG.data.M2 * cosDeltaTheta ** 2));
 
     return [omega1, omega2, dOmega1dt, dOmega2dt];
   }
