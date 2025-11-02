@@ -1,4 +1,6 @@
-import { World } from './world';
+import { ModuleConfig } from '../../config/module-config';
+import { defaultPerspective } from '../types';
+import { World, WorldConfig } from './world';
 
 export class CartesianAxes extends World {
     private static SIZE = 5;
@@ -21,6 +23,11 @@ export class CartesianAxes extends World {
         }
         this.init();
     }
+
+    override config = new ModuleConfig<WorldConfig>(
+        { cameraPerspective: defaultPerspective },
+        "cartesianAxesConfig",
+    );
 
     public name: string = "Cartesian Axes";
 

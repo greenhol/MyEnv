@@ -15,13 +15,14 @@ import { Grid } from './data/world/grid';
 import { HilbertCurve } from './data/world/hilbert-curve';
 import { DoublePendulumLive } from './data/world/double-pendulum-live';
 import { ModuleConfig } from './config/module-config';
+import { perspectiveToString } from './data/types';
 
 interface MainConfig {
-    currentWorld: number,
+    currentWorldId: number,
 }
 
 const MAIN_CONFIG = new ModuleConfig<MainConfig>(
-    { currentWorld: 1 },
+    { currentWorldId: 1 },
     "mainConfig",
 )
 
@@ -31,6 +32,7 @@ sheet.insertRule('.shape--invisible { visibility: hidden;}', sheet.cssRules.leng
 const stage = new Stage('main');
 const camera = new Camera();
 const cameraControl = new CameraKeyboardConnector(camera);
+let world: World | null = null;
 
 const abort$ = new Subject<void>();
 let subscription: Subscription;
@@ -38,7 +40,7 @@ let subscription: Subscription;
 const worldTitleArea = document.getElementById("worldTitle");
 const cameraInfoArea = document.getElementById("cameraInfo");
 
-function getWorldById(worldId: number): World {
+function createWorldById(worldId: number): World {
     switch (worldId) {
         case 1: return new CartesianAxes();
         case 2: return new Cube();
@@ -57,8 +59,10 @@ function getWorldById(worldId: number): World {
 }
 
 function runWorld() {
-    const world = getWorldById(MAIN_CONFIG.data.currentWorld)
-    updateWorldTitle(world.name)
+    world?.onDestroy();
+    world = createWorldById(MAIN_CONFIG.data.currentWorldId);
+    world.mountCamera(camera);
+    updateWorldTitle(world.name);
     const projector = new Projector(world, camera);
     stage.registerShapes(projector.shapes, new Set([ShapeType.PATH, ShapeType.CIRCLE]));
 
@@ -66,7 +70,7 @@ function runWorld() {
         .pipe(takeUntil(abort$))
         .subscribe({
             next: () => {
-                world.tick();
+                world?.tick();
             },
             complete: () => {
                 console.log('DONE');
@@ -77,7 +81,7 @@ function runWorld() {
 
 function switchWorld(worldId: number) {
     console.log(`switching world to (${worldId})`);
-    MAIN_CONFIG.data.currentWorld = worldId;
+    MAIN_CONFIG.data.currentWorldId = worldId;
     abort$.next();
     subscription.unsubscribe();
     timer(100).subscribe(() => {
@@ -98,6 +102,11 @@ document.addEventListener(
             // All good - camera handled key
         } else {
             switch (event.key) {
+                case 'Escape': {
+                    world?.resetConfig();
+                    world?.mountCamera(camera);
+                    break;
+                }
                 case "1": switchWorld(1); break;
                 case "2": switchWorld(2); break;
                 case "3": switchWorld(3); break;
@@ -115,9 +124,10 @@ document.addEventListener(
 );
 
 camera.state$.subscribe({
-    next: (text) => {
+    next: (cameraPerspective) => {
+        const displayableText = perspectiveToString(cameraPerspective)
         if (cameraInfoArea != null) {
-            cameraInfoArea.textContent = text;
+            cameraInfoArea.textContent = displayableText;
         }
     }
 });

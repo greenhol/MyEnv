@@ -1,18 +1,22 @@
-import { BehaviorSubject, Observable } from 'rxjs';
-import { SpaceCoord, SpacePath } from '../types';
+import { ModuleConfig } from './../../config/module-config';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { Perspective, ONE_DEGREE, SpaceCoord, SpacePath, defaultPerspective } from '../types';
+import { Camera } from '../../camera';
 
 export interface WorldState {
     dots: SpaceCoord[];
     paths: SpacePath[];
 }
 
-export enum SpaceElementTypeEnum {
-    DOT,
+export interface WorldConfig {
+    cameraPerspective: Perspective;
 }
 
 export abstract class World {
 
     private _t = 0;
+
+    private cameraSubscription: Subscription | null = null;
 
     protected dots: SpaceCoord[] = [];
     protected paths: SpacePath[] = [];
@@ -23,9 +27,11 @@ export abstract class World {
     });
     public state$: Observable<WorldState> = this._state$;
 
+    public config = new ModuleConfig<WorldConfig>({ cameraPerspective: defaultPerspective });
+
     public abstract name: string;
 
-    public abstract transitionToStateAt(t: number): void;
+    abstract transitionToStateAt(t: number): void;
 
     public init() {
         this.emit();
@@ -37,9 +43,24 @@ export abstract class World {
         this.emit();
     }
 
-    public drawOrder: SpaceElementTypeEnum[] = [
-        SpaceElementTypeEnum.DOT,
-    ];
+    public mountCamera(camera: Camera) {
+        camera.mountCamera(this.config.data.cameraPerspective);
+        this.cameraSubscription?.unsubscribe();
+        this.cameraSubscription = camera.state$.subscribe({
+            next: (cameraPerspective) => {
+                this.config.data.cameraPerspective = cameraPerspective;
+            }
+        });
+    }
+
+    public resetConfig(): void {
+        this.config.reset();
+    }
+
+    public onDestroy(): void {
+        this.config.save();
+        this.cameraSubscription?.unsubscribe();
+    }
 
     private emit() {
         this._state$.next({

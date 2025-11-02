@@ -1,4 +1,5 @@
-import { Camera, ONE_DEGREE } from './camera';
+import { Camera } from './camera';
+import { ONE_DEGREE } from './data/types';
 
 enum ValidKeys {
     Escape = 'Escape',
@@ -26,7 +27,7 @@ export class CameraKeyboardConnector {
 
     public onNextEvent(event: string): boolean {
         switch (event) {
-            case ValidKeys.Escape: { this.camera.reset() } return true;
+            // case ValidKeys.Escape: { this.camera.reset() } return true;
             case ValidKeys.W: { this.camera.moveZ(0.1) } return true;
             case ValidKeys.A: { this.camera.moveX(-0.1) } return true;
             case ValidKeys.S: { this.camera.moveZ(-0.1) } return true;

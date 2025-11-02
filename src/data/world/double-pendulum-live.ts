@@ -1,25 +1,15 @@
 import { ModuleConfig } from '../../config/module-config';
-import { SpaceCoord, SpacePath } from './../types';
-import { World } from './world';
+import { Perspective, ONE_DEGREE, SpaceCoord, SpacePath } from './../types';
+import { World, WorldConfig } from './world';
 
-interface DoublePendulumConfig {
-  M1: number; // Mass of pendulum 1
-  M2: number; // Mass of pendulum 2
-  L1: number; // Length of pendulum 1
-  L2: number; // Length of pendulum 2
+interface DoublePendulumConfig extends WorldConfig {
+  cameraPerspective: Perspective;
+  m1: number; // Mass of pendulum 1
+  m2: number; // Mass of pendulum 2
+  l1: number; // Length of pendulum 1
+  l2: number; // Length of pendulum 2
   friction: number; // friction of the system
-}
-
-const CONFIG = new ModuleConfig<DoublePendulumConfig>(
-  {
-    M1: 1,
-    M2: 1,
-    L1: 1,
-    L2: 1,
-    friction: 1,
-  },
-  "doublePendulumConfig",
-)
+};
 
 const GRAVITY_ACC = 9.81; // Acceleration due to gravity
 
@@ -60,6 +50,23 @@ export class DoublePendulumLive extends World {
     this.init();
   }
 
+  override config = new ModuleConfig<DoublePendulumConfig>(
+    {
+      cameraPerspective: {
+        position: { x: 0, y: -2, z: -6 },
+        angleX: 0 * ONE_DEGREE,
+        angleY: 0 * ONE_DEGREE,
+        angleZ: 0 * ONE_DEGREE,
+      },
+      m1: 1,
+      m2: 1,
+      l1: 1,
+      l2: 1,
+      friction: 1,
+    },
+    "doublePendulumConfig",
+  );
+
   public name: string = "Double Pendulum Live";
 
   public transitionToStateAt(t: number): void {
@@ -67,9 +74,9 @@ export class DoublePendulumLive extends World {
     const time = dt * t;
 
     this.current = this.current.map((state: PendulumState): PendulumState => {
-      const nextStep = this.rk4Step(this.doublePendulumODE, time, this.pendulumStateAsArray(state), dt);
-      nextStep[2] *= CONFIG.data.friction;
-      nextStep[3] *= CONFIG.data.friction;
+      const nextStep = this.rk4Step(this.doublePendulumODE, time, this.pendulumStateAsArray(state), dt, this.config.data);
+      nextStep[2] *= this.config.data.friction;
+      nextStep[3] *= this.config.data.friction;
       return this.pendulumStateFromArray(nextStep);
     });
     this.updateWithCurrent();
@@ -90,10 +97,10 @@ export class DoublePendulumLive extends World {
   }
 
   private toCartesian(theta1: number, theta2: number): [number, number, number, number] {
-    const x1 = CONFIG.data.L1 * Math.sin(theta1);
-    const y1 = -CONFIG.data.L1 * Math.cos(theta1);
-    const x2 = x1 + CONFIG.data.L2 * Math.sin(theta2);
-    const y2 = y1 - CONFIG.data.L2 * Math.cos(theta2);
+    const x1 = this.config.data.l1 * Math.sin(theta1);
+    const y1 = -this.config.data.l1 * Math.cos(theta1);
+    const x2 = x1 + this.config.data.l2 * Math.sin(theta2);
+    const y2 = y1 - this.config.data.l2 * Math.cos(theta2);
 
     return [x1, y1, x2, y2];
   }
@@ -106,7 +113,7 @@ export class DoublePendulumLive extends World {
     return { theta1: array[0], theta2: array[1], omega1: array[2], omega2: array[3] };
   }
 
-  private doublePendulumODE(t: number, y: number[]): number[] {
+  private doublePendulumODE(t: number, y: number[], c: DoublePendulumConfig): number[] {
     const theta1 = y[0];
     const theta2 = y[1];
     const omega1 = y[2];
@@ -118,31 +125,32 @@ export class DoublePendulumLive extends World {
     const cosDeltaTheta = Math.cos(deltaTheta);
 
     const dOmega1dt =
-      (CONFIG.data.M2 * CONFIG.data.L1 * omega1 ** 2 * sinDeltaTheta * cosDeltaTheta +
-        CONFIG.data.M2 * GRAVITY_ACC * Math.sin(theta2) * cosDeltaTheta +
-        CONFIG.data.M2 * CONFIG.data.L2 * omega2 ** 2 * sinDeltaTheta -
-        (CONFIG.data.M1 + CONFIG.data.M2) * GRAVITY_ACC * Math.sin(theta1)) /
-      (CONFIG.data.L1 * ((CONFIG.data.M1 + CONFIG.data.M2) - CONFIG.data.M2 * cosDeltaTheta ** 2));
+      (c.m2 * c.l1 * omega1 ** 2 * sinDeltaTheta * cosDeltaTheta +
+        c.m2 * GRAVITY_ACC * Math.sin(theta2) * cosDeltaTheta +
+        c.m2 * c.l2 * omega2 ** 2 * sinDeltaTheta -
+        (c.m1 + c.m2) * GRAVITY_ACC * Math.sin(theta1)) /
+      (c.l1 * ((c.m1 + c.m2) - c.m2 * cosDeltaTheta ** 2));
 
     const dOmega2dt =
-      (-CONFIG.data.M2 * CONFIG.data.L2 * omega2 ** 2 * sinDeltaTheta * cosDeltaTheta +
-        (CONFIG.data.M1 + CONFIG.data.M2) * (GRAVITY_ACC * Math.sin(theta1) * cosDeltaTheta - CONFIG.data.L1 * omega1 ** 2 * sinDeltaTheta) -
-        (CONFIG.data.M1 + CONFIG.data.M2) * GRAVITY_ACC * Math.sin(theta2)) /
-      (CONFIG.data.L2 * ((CONFIG.data.M1 + CONFIG.data.M2) - CONFIG.data.M2 * cosDeltaTheta ** 2));
+      (-c.m2 * c.l2 * omega2 ** 2 * sinDeltaTheta * cosDeltaTheta +
+        (c.m1 + c.m2) * (GRAVITY_ACC * Math.sin(theta1) * cosDeltaTheta - c.l1 * omega1 ** 2 * sinDeltaTheta) -
+        (c.m1 + c.m2) * GRAVITY_ACC * Math.sin(theta2)) /
+      (c.l2 * ((c.m1 + c.m2) - c.m2 * cosDeltaTheta ** 2));
 
     return [omega1, omega2, dOmega1dt, dOmega2dt];
   }
 
   private rk4Step(
-    f: (t: number, y: number[]) => number[],
+    f: (t: number, y: number[], c: DoublePendulumConfig) => number[],
     t: number,
     y: number[],
     dt: number,
+    c: DoublePendulumConfig,
   ): number[] {
-    const k1 = f(t, y);
-    const k2 = f(t + dt / 2, y.map((yi, i) => yi + (dt / 2) * k1[i]));
-    const k3 = f(t + dt / 2, y.map((yi, i) => yi + (dt / 2) * k2[i]));
-    const k4 = f(t + dt, y.map((yi, i) => yi + dt * k3[i]));
+    const k1 = f(t, y, c);
+    const k2 = f(t + dt / 2, y.map((yi, i) => yi + (dt / 2) * k1[i]), c);
+    const k3 = f(t + dt / 2, y.map((yi, i) => yi + (dt / 2) * k2[i]), c);
+    const k4 = f(t + dt, y.map((yi, i) => yi + dt * k3[i]), c);
 
     return y.map((yi, i) => yi + (dt / 6) * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]));;
   }

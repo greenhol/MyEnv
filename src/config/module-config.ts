@@ -2,69 +2,76 @@ export class ModuleConfig<T> {
     data: T;
     private _initialConfig: T;
     private _storageKey: string;
+    private _persistable: boolean;
     private _storageType: "local" | "session";
 
     constructor(
         initialConfig: T,
-        storageKey: string,
-        saveOnExit: boolean = true,
+        storageKey: string = "",
         storageType: "local" | "session" = "local",
     ) {
         this._initialConfig = initialConfig;
         this._storageKey = storageKey;
+        this._persistable = !!storageKey;
         this._storageType = storageType;
 
         if (!this.load()) {
             this.data = { ...this._initialConfig };
         }
-        this.init(saveOnExit);
+        this.init();
     }
 
-    private init(saveOnExit: boolean) {
+    private init() {
         // @ts-ignore
-        if (window.configControl == null) {
+        if (window.myEnvConfig == null) {
             // @ts-ignore
-            window.configControl = [];
+            window.myEnvConfig = [];
         }
         // @ts-ignore
-        if (window.config == null) {
+        if (window.myEnvConfigCtrl == null) {
             // @ts-ignore
-            window.config = [];
+            window.myEnvConfigCtrl = [];
         }
 
         // @ts-ignore
-        window.configControl[this._storageKey] = this;
+        window.myEnvConfig[this._storageKey] = this.data;
         // @ts-ignore
-        window.config[this._storageKey] = this.data;
+        window.myEnvConfigCtrl[this._storageKey] = this;
 
-        if (saveOnExit) {
-            window.addEventListener("beforeunload", () => {
-                this.save();
-            });
-        }
+        window.addEventListener("beforeunload", () => {
+            this.save();
+        });
     }
 
     save(): void {
-        const storageObject = this._storageType === "local" ? localStorage : sessionStorage;
-        storageObject.setItem(this._storageKey, JSON.stringify(this.data));
-        console.log(`Configuration ${this._storageKey} saved to ${this._storageType}`);
+        if (!this._persistable) {
+            console.log(`Configuration ${this._storageKey} not persistable`);
+        } else {
+            const storageObject = this._storageType === "local" ? localStorage : sessionStorage;
+            storageObject.setItem(this._storageKey, JSON.stringify(this.data));
+            console.log(`Configuration ${this._storageKey} saved to ${this._storageType}`);
+        }
     }
 
     load(): boolean {
-        const storageObject = this._storageType === "local" ? localStorage : sessionStorage;
-        const data = storageObject.getItem(this._storageKey);
-        if (data) {
-            try {
-                this.data = JSON.parse(data);
-                console.log(`Configuration ${this._storageKey} loaded from ${this._storageType}`);
-                return true;
-            } catch (e) {
-                console.error("Error loading configuration ${this._storageKey}:", e);
+        if (!this._persistable) {
+            return false;
+        } else {
+            const storageObject = this._storageType === "local" ? localStorage : sessionStorage;
+            const data = storageObject.getItem(this._storageKey);
+            if (data) {
+                try {
+                    this.data = JSON.parse(data);
+                    console.log(`Configuration ${this._storageKey} loaded from ${this._storageType}`);
+                    return true;
+                } catch (e) {
+                    console.error("Error loading configuration ${this._storageKey}:", e);
+                    return false;
+                }
+            } else {
+                console.log(`No Configuration ${this._storageKey} found in ${this._storageType}`);
                 return false;
             }
-        } else {
-            console.log(`No Configuration ${this._storageKey} found in ${this._storageType}`);
-            return false;
         }
     }
 

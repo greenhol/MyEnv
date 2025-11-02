@@ -1,5 +1,7 @@
-import { World } from './world';
+import { World, WorldConfig } from './world';
 import { DATA } from './chart3DLifeTable.data';
+import { ModuleConfig } from '../../config/module-config';
+import { ONE_DEGREE } from '../types';
 
 export class Chart3DLifeTable extends World {
     private static DIST = 0.1;
@@ -18,6 +20,18 @@ export class Chart3DLifeTable extends World {
         }
         this.init();
     }
+
+    override config = new ModuleConfig<WorldConfig>(
+        {
+            cameraPerspective: {
+                position: { x: -2, y: 3, z: -3.6 },
+                angleX: 17 * ONE_DEGREE,
+                angleY: -69 * ONE_DEGREE,
+                angleZ: 0 * ONE_DEGREE,
+            },
+        },
+        "lifeExpectancyTableConfig",
+    );
 
     public name: string = "Life expectancy table";
 
