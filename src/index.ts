@@ -2,7 +2,7 @@ import { Stage } from './stage';
 import { ShapeType } from './data/shape/shape';
 import { CartesianAxes } from './data/world/cartesian-axes';
 import { Projector } from './projector';
-import { Subject, Subscription, interval, take, takeUntil, timer } from 'rxjs';
+import { Subject, interval, take, takeUntil, timer } from 'rxjs';
 import { BellCurve } from './data/world/bell-curve';
 import { BouncingParticles } from './data/world/bouncing-particles';
 import { World } from './data/world/world';
@@ -16,6 +16,7 @@ import { HilbertCurve } from './data/world/hilbert-curve';
 import { DoublePendulumLive } from './data/world/double-pendulum-live';
 import { ModuleConfig } from './config/module-config';
 import { perspectiveToString } from './data/types';
+import { SerialSubscription } from './utils/SerialSubscription';
 
 interface MainConfig {
     currentWorldId: number,
@@ -35,7 +36,8 @@ const cameraControl = new CameraKeyboardConnector(camera);
 let world: World | null = null;
 
 const abort$ = new Subject<void>();
-let subscription: Subscription;
+let newWorldSubscription = new SerialSubscription();
+let worldTickSubscription = new SerialSubscription();
 
 const worldTitleArea = document.getElementById("worldTitle");
 const cameraInfoArea = document.getElementById("cameraInfo");
@@ -65,28 +67,29 @@ function runWorld() {
     updateWorldTitle(world.name);
     const projector = new Projector(world, camera);
     stage.registerShapes(projector.shapes, new Set([ShapeType.PATH, ShapeType.CIRCLE]));
-
-    subscription = interval(40)
-        .pipe(takeUntil(abort$))
-        .subscribe({
-            next: () => {
-                world?.tick();
-            },
-            complete: () => {
-                console.log('DONE');
-                stage.unregisterShapes(projector.shapes.id);
-            }
-        });
+    worldTickSubscription.set(
+        interval(40)
+            .pipe(takeUntil(abort$))
+            .subscribe({
+                next: () => {
+                    world?.tick();
+                },
+                complete: () => {
+                    console.log('DONE');
+                    stage.unregisterShapes(projector.shapes.id);
+                }
+            })
+    );
 }
 
 function switchWorld(worldId: number) {
     console.log(`switching world to (${worldId})`);
     MAIN_CONFIG.data.currentWorldId = worldId;
     abort$.next();
-    subscription.unsubscribe();
-    timer(100).subscribe(() => {
-        runWorld();
-    });
+    worldTickSubscription.unsubscribe();
+    newWorldSubscription.set(
+        timer(100).subscribe(() => { runWorld() })
+    );
 }
 
 function updateWorldTitle(name: string) {

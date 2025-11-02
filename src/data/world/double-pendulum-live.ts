@@ -22,9 +22,9 @@ interface PendulumState {
 
 export class DoublePendulumLive extends World {
 
-  zDistance = 5;
-  current: PendulumState[] = [];
-  origins: SpaceCoord[] = [];
+  private _zDistance = 5;
+  private _current: PendulumState[] = [];
+  private _origins: SpaceCoord[] = [];
 
   constructor() {
     super()
@@ -32,10 +32,10 @@ export class DoublePendulumLive extends World {
     for (let x = -17; x < 18; x += 4) {
       for (let y = -9; y < 10; y += 4) {
         for (let z = 1; z < 2; z++) {
-          this.origins.push(
-            { x: x, y: y, z: z * this.zDistance }
+          this._origins.push(
+            { x: x, y: y, z: z * this._zDistance }
           )
-          this.current.push({
+          this._current.push({
             theta1: x / Math.PI / 2,
             theta2: y / Math.PI / 2,
             omega1: (z - 1) * 1,
@@ -73,7 +73,7 @@ export class DoublePendulumLive extends World {
     const dt = 0.025;
     const time = dt * t;
 
-    this.current = this.current.map((state: PendulumState): PendulumState => {
+    this._current = this._current.map((state: PendulumState): PendulumState => {
       const nextStep = this.rk4Step(this.doublePendulumODE, time, this.pendulumStateAsArray(state), dt, this.config.data);
       nextStep[2] *= this.config.data.friction;
       nextStep[3] *= this.config.data.friction;
@@ -83,11 +83,11 @@ export class DoublePendulumLive extends World {
   }
 
   private updateWithCurrent() {
-    const newCoords = this.current.map((state: PendulumState, index: number): SpaceCoord[] => {
+    const newCoords = this._current.map((state: PendulumState, index: number): SpaceCoord[] => {
       const coords = this.toCartesian(state.theta1, state.theta2);
-      const coord1: SpaceCoord = { x: this.origins[index].x, y: this.origins[index].y, z: this.origins[index].z };
-      const coord2: SpaceCoord = { x: this.origins[index].x + coords[0], y: this.origins[index].y + coords[1], z: this.origins[index].z };
-      const coord3: SpaceCoord = { x: this.origins[index].x + coords[2], y: this.origins[index].y + coords[3], z: this.origins[index].z };
+      const coord1: SpaceCoord = { x: this._origins[index].x, y: this._origins[index].y, z: this._origins[index].z };
+      const coord2: SpaceCoord = { x: this._origins[index].x + coords[0], y: this._origins[index].y + coords[1], z: this._origins[index].z };
+      const coord3: SpaceCoord = { x: this._origins[index].x + coords[2], y: this._origins[index].y + coords[3], z: this._origins[index].z };
       return [coord1, coord2, coord3];
     });
     const newPaths = newCoords.map((spaceCoords: SpaceCoord[]): SpacePath => { return { coords: spaceCoords, close: false } });

@@ -2,7 +2,6 @@ import { Camera } from './camera';
 import { ONE_DEGREE } from './data/types';
 
 enum ValidKeys {
-    Escape = 'Escape',
     W = 'w',
     A = 'a',
     S = 's',
@@ -15,7 +14,7 @@ enum ValidKeys {
     Right = 'ArrowRight',
     Comma = ',',
     Dot = '.',
-}
+};
 
 export class CameraKeyboardConnector {
 
@@ -27,7 +26,6 @@ export class CameraKeyboardConnector {
 
     public onNextEvent(event: string): boolean {
         switch (event) {
-            // case ValidKeys.Escape: { this.camera.reset() } return true;
             case ValidKeys.W: { this.camera.moveZ(0.1) } return true;
             case ValidKeys.A: { this.camera.moveX(-0.1) } return true;
             case ValidKeys.S: { this.camera.moveZ(-0.1) } return true;
@@ -43,4 +41,4 @@ export class CameraKeyboardConnector {
             default: return false;
         }
     }
-}
+};

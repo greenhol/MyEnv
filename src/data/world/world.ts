@@ -1,7 +1,8 @@
 import { ModuleConfig } from './../../config/module-config';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Perspective, ONE_DEGREE, SpaceCoord, SpacePath, defaultPerspective } from '../types';
 import { Camera } from '../../camera';
+import { SerialSubscription } from '../../utils/SerialSubscription';
 
 export interface WorldState {
     dots: SpaceCoord[];
@@ -16,7 +17,7 @@ export abstract class World {
 
     private _t = 0;
 
-    private cameraSubscription: Subscription | null = null;
+    private _cameraSubscription = new SerialSubscription();
 
     protected dots: SpaceCoord[] = [];
     protected paths: SpacePath[] = [];
@@ -45,12 +46,13 @@ export abstract class World {
 
     public mountCamera(camera: Camera) {
         camera.mountCamera(this.config.data.cameraPerspective);
-        this.cameraSubscription?.unsubscribe();
-        this.cameraSubscription = camera.state$.subscribe({
-            next: (cameraPerspective) => {
-                this.config.data.cameraPerspective = cameraPerspective;
-            }
-        });
+        this._cameraSubscription.set(
+            camera.state$.subscribe({
+                next: (cameraPerspective) => {
+                    this.config.data.cameraPerspective = cameraPerspective;
+                }
+            })
+        );
     }
 
     public resetConfig(): void {
@@ -59,7 +61,7 @@ export abstract class World {
 
     public onDestroy(): void {
         this.config.save();
-        this.cameraSubscription?.unsubscribe();
+        this._cameraSubscription.unsubscribe();
     }
 
     private emit() {
