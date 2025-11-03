@@ -101,30 +101,43 @@ function updateWorldTitle(name: string) {
 document.addEventListener(
     "keydown",
     (event) => {
-        if (cameraControl.onNextEvent(event.key)) {
-            // All good - camera handled key
-        } else {
-            switch (event.key) {
-                case 'Escape': {
-                    world?.resetConfig();
-                    world?.mountCamera(camera);
-                    break;
-                }
-                case "1": switchWorld(1); break;
-                case "2": switchWorld(2); break;
-                case "3": switchWorld(3); break;
-                case "4": switchWorld(4); break;
-                case "5": switchWorld(5); break;
-                case "6": switchWorld(6); break;
-                case "7": switchWorld(7); break;
-                case "8": switchWorld(8); break;
-                case "9": switchWorld(9); break;
-                default: console.log(`unhandled key ${event.key}`);
-            }
-        }
+        handleKeyPress(event.key);
     },
     false,
 );
+
+document.querySelector('.virtual-keyboard-grid')?.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement;
+    if (target.classList.contains('virtual-key')) {
+        const keyValue = target.dataset.key || '';
+        handleKeyPress(keyValue);
+    }
+});
+
+function handleKeyPress(keyValue: string) {
+    if (cameraControl.onNextEvent(keyValue)) {
+        // All good - camera handled key
+    } else {
+        switch (keyValue) {
+            case "": console.log(`invalid key`);
+            case 'Escape': {
+                world?.resetConfig();
+                world?.mountCamera(camera);
+                break;
+            }
+            case "1": switchWorld(1); break;
+            case "2": switchWorld(2); break;
+            case "3": switchWorld(3); break;
+            case "4": switchWorld(4); break;
+            case "5": switchWorld(5); break;
+            case "6": switchWorld(6); break;
+            case "7": switchWorld(7); break;
+            case "8": switchWorld(8); break;
+            case "9": switchWorld(9); break;
+            default: console.log(`unhandled key ${keyValue}`);
+        }
+    }
+}
 
 camera.state$.subscribe({
     next: (cameraPerspective) => {
