@@ -35,9 +35,8 @@ const camera = new Camera();
 const cameraControl = new CameraKeyboardConnector(camera);
 let world: World | null = null;
 
-const abort$ = new Subject<void>();
-let newWorldSubscription = new SerialSubscription();
-let worldTickSubscription = new SerialSubscription();
+const abortWorldTick$ = new Subject<void>();
+const newWorldSubscription = new SerialSubscription();
 
 const worldTitleArea = document.getElementById("worldTitle");
 const cameraInfoArea = document.getElementById("cameraInfo");
@@ -60,6 +59,33 @@ function createWorldById(worldId: number): World {
     }
 }
 
+function init() {
+    appendVirtualKeyboard();
+    runWorld();
+}
+
+function appendVirtualKeyboard() {
+    fetch('virtual-keyboard.html')
+        .then(response => response.text())
+        .then(html => {
+            const virtualKeyboardContainer = document.getElementById('virtual-keyboard-container');
+            if (virtualKeyboardContainer != null) {
+                virtualKeyboardContainer.innerHTML = html;
+            } else {
+                console.error("virtual-keyboard-container not found to append virtual keyboard html")
+            }
+        })
+        .then(_ => {
+            document.getElementById('virtual-keyboard-grid')?.addEventListener('click', (event) => {
+                const target = event.target as HTMLElement;
+                if (target.classList.contains('virtual-key')) {
+                    const keyValue = target.dataset.key || '';
+                    handleKeyPress(keyValue);
+                }
+            });
+        });
+}
+
 function runWorld() {
     world?.onDestroy();
     world = createWorldById(MAIN_CONFIG.data.currentWorldId);
@@ -67,26 +93,23 @@ function runWorld() {
     updateWorldTitle(world.name);
     const projector = new Projector(world, camera);
     stage.registerShapes(projector.shapes, new Set([ShapeType.PATH, ShapeType.CIRCLE]));
-    worldTickSubscription.set(
-        interval(40)
-            .pipe(takeUntil(abort$))
-            .subscribe({
-                next: () => {
-                    world?.tick();
-                },
-                complete: () => {
-                    console.log('DONE');
-                    stage.unregisterShapes(projector.shapes.id);
-                }
-            })
-    );
+    interval(40)
+        .pipe(takeUntil(abortWorldTick$))
+        .subscribe({
+            next: () => {
+                world?.tick();
+            },
+            complete: () => {
+                console.log('DONE');
+                stage.unregisterShapes(projector.shapes.id);
+            }
+        });
 }
 
 function switchWorld(worldId: number) {
     console.log(`switching world to (${worldId})`);
     MAIN_CONFIG.data.currentWorldId = worldId;
-    abort$.next();
-    worldTickSubscription.unsubscribe();
+    abortWorldTick$.next();
     newWorldSubscription.set(
         timer(100).subscribe(() => { runWorld() })
     );
@@ -105,14 +128,6 @@ document.addEventListener(
     },
     false,
 );
-
-document.querySelector('.virtual-keyboard-grid')?.addEventListener('click', (event) => {
-    const target = event.target as HTMLElement;
-    if (target.classList.contains('virtual-key')) {
-        const keyValue = target.dataset.key || '';
-        handleKeyPress(keyValue);
-    }
-});
 
 function handleKeyPress(keyValue: string) {
     if (cameraControl.onNextEvent(keyValue)) {
@@ -148,4 +163,4 @@ camera.state$.subscribe({
     }
 });
 
-runWorld();
+init();
