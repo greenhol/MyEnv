@@ -2,7 +2,7 @@ import { ModuleConfig } from './../../config/module-config';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Perspective, ONE_DEGREE, SpaceCoord, SpacePath, defaultPerspective } from '../types';
 import { Camera } from '../../camera';
-import { SerialSubscription } from '../../utils/SerialSubscription';
+import { SerialSubscription } from '../../utils/serial-subscription';
 
 export interface WorldState {
     dots: SpaceCoord[];

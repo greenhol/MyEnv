@@ -16,7 +16,8 @@ import { HilbertCurve } from './data/world/hilbert-curve';
 import { DoublePendulumLive } from './data/world/double-pendulum-live';
 import { ModuleConfig } from './config/module-config';
 import { perspectiveToString } from './data/types';
-import { SerialSubscription } from './utils/SerialSubscription';
+import { SerialSubscription } from './utils/serial-subscription';
+import { longPressHandler } from './utils/long-press-handler';
 
 interface MainConfig {
     currentWorldId: number,
@@ -76,13 +77,8 @@ function appendVirtualKeyboard() {
             }
         })
         .then(_ => {
-            document.getElementById('virtual-keyboard-grid')?.addEventListener('click', (event) => {
-                const target = event.target as HTMLElement;
-                if (target.classList.contains('virtual-key')) {
-                    const keyValue = target.dataset.key || '';
-                    handleKeyPress(keyValue);
-                }
-            });
+            Array.from(document.getElementsByClassName('virtual-key'))
+                .forEach(element => longPressHandler(element, handleKeyPress));
         });
 }
 
@@ -100,7 +96,7 @@ function runWorld() {
                 world?.tick();
             },
             complete: () => {
-                console.log('DONE');
+                console.log('Old world completed - unregistering shapes');
                 stage.unregisterShapes(projector.shapes.id);
             }
         });
@@ -130,9 +126,7 @@ document.addEventListener(
 );
 
 function handleKeyPress(keyValue: string) {
-    if (cameraControl.onNextEvent(keyValue)) {
-        // All good - camera handled key
-    } else {
+    if (!cameraControl.onNextEvent(keyValue)) {
         switch (keyValue) {
             case "": console.log(`invalid key`);
             case 'Escape': {
