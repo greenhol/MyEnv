@@ -4,6 +4,7 @@ import { select, Selection } from 'd3';
 import { Circle } from './data/shape/circle';
 import { Shape, ShapeType } from './data/shape/shape';
 import { Path } from './data/shape/path';
+import { SerialSubscriptions } from './utils/serial-subscriptions';
 
 export class Stage {
     
@@ -12,7 +13,7 @@ export class Stage {
     // private svgg: Selection<SVGSVGElement, unknown, HTMLElement, any>;
     private svgg: Selection<SVGGElement, unknown, HTMLElement, any>;
 
-    private subscriptions = new Map<string, Subscription>();
+    private subscriptions = new SerialSubscriptions();
     private created: Set<string> = new Set();
 
     constructor(divId: string) {
@@ -39,10 +40,7 @@ export class Stage {
 
     unregisterShapes(id: string) {
         this.removeShapes(id);
-        if (this.subscriptions.has(id)) {
-            this.subscriptions.get(id)?.unsubscribe();
-            this.subscriptions.delete(id);
-        }
+        this.subscriptions.unsubscribe(id);
         this.created.delete(id);
     }
 
