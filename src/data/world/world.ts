@@ -1,12 +1,14 @@
-import { ModuleConfig } from './../../config/module-config';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Perspective, ONE_DEGREE, SpaceCoord, SpacePath, defaultPerspective } from '../types';
 import { Camera } from '../../camera';
 import { SerialSubscription } from '../../utils/serial-subscription';
+import { Circle3d } from '../shape/circle';
+import { Path3d } from '../shape/path';
+import { Perspective, defaultPerspective } from '../types';
+import { ModuleConfig } from './../../config/module-config';
 
 export interface WorldState {
-    dots: SpaceCoord[];
-    paths: SpacePath[];
+    circles: Circle3d[];
+    paths: Path3d[];
 }
 
 export interface WorldConfig {
@@ -19,11 +21,11 @@ export abstract class World {
 
     private _cameraSubscription = new SerialSubscription();
 
-    protected dots: SpaceCoord[] = [];
-    protected paths: SpacePath[] = [];
+    protected circles: Circle3d[] = [];
+    protected paths: Path3d[] = [];
 
     private _state$ = new BehaviorSubject<WorldState>({
-        dots: this.dots,
+        circles: this.circles,
         paths: this.paths,
     });
     public state$: Observable<WorldState> = this._state$;
@@ -66,7 +68,7 @@ export abstract class World {
 
     private emit() {
         this._state$.next({
-            dots: this.dots,
+            circles: this.circles,
             paths: this.paths,
         });
     }

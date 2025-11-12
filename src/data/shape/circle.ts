@@ -1,5 +1,12 @@
 import { idGenerator } from '../../utils/unique';
+import { SpaceCoord } from '../types';
 import { Shape, ShapeType } from './shape';
+
+export interface Circle3dAttributes {
+    position: SpaceCoord,
+    radius: number,
+    style: CircleStyle,
+}
 
 export interface CircleStyle {
     strokeWidth: number;
@@ -13,45 +20,73 @@ export interface CircleAttr {
     cx: number;
     cy: number;
     r: number;
-    dist: number;
 }
+
+const defaultStyle: CircleStyle = {
+    strokeWidth: 0.5,
+    stroke: '#aaa',
+    strokeOpacity: 1,
+    fill: '#ddd',
+    fillOpacity: 1
+};
 
 export class Circle extends Shape {
 
     public id = idGenerator.newId(ShapeType.CIRCLE)
     public type = ShapeType.CIRCLE;
 
-    public style: CircleStyle = {
-        strokeWidth: 0.5,
-        stroke: '#aaa',
-        strokeOpacity: 1,
-        fill: '#ddd',
-        fillOpacity: 1
-    }
+    public style: CircleStyle = defaultStyle;
 
     public attr: CircleAttr;
-    
-    constructor(x: number, y: number, r: number, dist: number) {
+
+    constructor(x: number, y: number, r: number) {
         super();
         this.attr = {
             cx: x,
             cy: y,
             r: r,
-            dist: dist,
         }
     }
 
-    public setPosition(x: number, y: number, r: number, dist: number) {
+    public setPosition(x: number, y: number, r: number) {
         this.attr.cx = x;
         this.attr.cy = y;
         this.attr.r = r;
-        this.attr.dist = dist;
+    }
+}
+
+export class Circle3d implements Circle3dAttributes {
+    private _position: SpaceCoord;
+    private _radius: number;
+    private _style: CircleStyle;
+
+    constructor(position: SpaceCoord, radius?: number, style?: CircleStyle) {
+        this.position = position;
+        this.radius = radius != null ? radius : 1;
+        this.style = style != null ? style : defaultStyle;
     }
 
-    public move(x: number, y: number, r: number) {
-        this.attr.cx += x;
-        this.attr.cy += y;
-        this.attr.r += r;
-        if (this.attr.r < 5) this.attr.r = 5;
+    public get position() {
+        return this._position;
+    }
+
+    public set position(position: SpaceCoord) {
+        this._position = position;
+    }
+
+    public get radius() {
+        return this._radius;
+    }
+
+    public set radius(radius: number) {
+        this._radius = radius;
+    }
+
+    public get style() {
+        return this._style;
+    }
+
+    public set style(style: CircleStyle) {
+        this._style = style;
     }
 }

@@ -1,5 +1,6 @@
 import { ModuleConfig } from '../../config/module-config';
-import { ONE_DEGREE, SpaceCoord } from '../types';
+import { Circle3d } from '../shape/circle';
+import { ONE_DEGREE } from '../types';
 import { World, WorldConfig } from './world';
 
 export class BellCurve extends World {
@@ -11,7 +12,7 @@ export class BellCurve extends World {
 
         for (let i = -BellCurve.SIZE; i < BellCurve.SIZE; i++) {
             for (let j = -BellCurve.SIZE; j < BellCurve.SIZE; j++) {
-                this.dots.push({ x: BellCurve.DIST * i, y: 0, z: BellCurve.DIST * j });
+                this.circles.push(new Circle3d({ x: BellCurve.DIST * i, y: 0, z: BellCurve.DIST * j }));
             }
         }
         this.init();
@@ -33,8 +34,8 @@ export class BellCurve extends World {
 
     public transitionToStateAt(t: number): void {
         const amp = 3 * Math.sin(t * Math.PI / 180);
-        this.dots.forEach((dot: SpaceCoord) => {
-            dot.y = amp * Math.exp(-(dot.x * dot.x + dot.z * dot.z));
+        this.circles.forEach((circle: Circle3d) => {
+            circle.position.y = amp * Math.exp(-(circle.position.x * circle.position.x + circle.position.z * circle.position.z));
         });
     }
 }

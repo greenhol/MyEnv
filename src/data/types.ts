@@ -4,11 +4,6 @@ export interface SpaceCoord {
     z: number;
 }
 
-export interface SpacePath {
-    coords: SpaceCoord[];
-    close: boolean;
-}
-
 export const ONE_DEGREE = Math.PI / 180;
 
 export interface Perspective {

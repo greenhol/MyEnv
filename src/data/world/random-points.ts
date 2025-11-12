@@ -1,3 +1,4 @@
+import { Circle3d } from '../shape/circle';
 import { SpaceCoord } from '../types';
 import { World } from './world';
 
@@ -15,49 +16,49 @@ export class RandomPoints extends World {
     private static DIST = 0.15;
 
     constructor() {
-      super()
+        super()
 
-      this.dots.push( { x: 0, y: 0, z: 0 } );
-      let dot: SpaceCoord = JSON.parse(JSON.stringify(this.dots[0]));
-      let lastDot: SpaceCoord = JSON.parse(JSON.stringify(this.dots[0]));
-      let direction: DirectionEnum;
-    
-      for (let i = 0; i < 1500; i++) {
-        direction = Math.floor(Math.random() * 6);
-        dot = JSON.parse(JSON.stringify(lastDot));
-        switch (direction) {
-          case DirectionEnum.UP:
-            dot.y += RandomPoints.DIST;
-          break;
-          case DirectionEnum.DOWN:
-            dot.y -= RandomPoints.DIST;
-          break;
-          case DirectionEnum.LEFT:
-            dot.x += RandomPoints.DIST;
-          break;
-          case DirectionEnum.RIGHT:
-            dot.x -= RandomPoints.DIST;
-          break;
-          case DirectionEnum.FORWARD:
-            dot.z -= RandomPoints.DIST;
-          break;
-          case DirectionEnum.BACKWARD:
-            dot.z += RandomPoints.DIST;
-          break;
-          default:
-          console.log('NOK', direction);
+        this.circles.push(new Circle3d({ x: 0, y: 0, z: 0 }));
+        let circlePosition: SpaceCoord = JSON.parse(JSON.stringify(this.circles[0].position));
+        let lastCirclePosition: SpaceCoord = JSON.parse(JSON.stringify(this.circles[0].position));
+        let direction: DirectionEnum;
+
+        for (let i = 0; i < 1500; i++) {
+            direction = Math.floor(Math.random() * 6);
+            circlePosition = JSON.parse(JSON.stringify(lastCirclePosition));
+            switch (direction) {
+                case DirectionEnum.UP:
+                    circlePosition.y += RandomPoints.DIST;
+                    break;
+                case DirectionEnum.DOWN:
+                    circlePosition.y -= RandomPoints.DIST;
+                    break;
+                case DirectionEnum.LEFT:
+                    circlePosition.x += RandomPoints.DIST;
+                    break;
+                case DirectionEnum.RIGHT:
+                    circlePosition.x -= RandomPoints.DIST;
+                    break;
+                case DirectionEnum.FORWARD:
+                    circlePosition.z -= RandomPoints.DIST;
+                    break;
+                case DirectionEnum.BACKWARD:
+                    circlePosition.z += RandomPoints.DIST;
+                    break;
+                default:
+                    console.log('NOK', direction);
+            }
+            if (Math.abs(circlePosition.x) > RandomPoints.AREA || Math.abs(circlePosition.y) > RandomPoints.AREA || Math.abs(circlePosition.z) > RandomPoints.AREA) {
+                continue;
+            }
+            lastCirclePosition = JSON.parse(JSON.stringify(circlePosition));
+            this.circles.push(new Circle3d(JSON.parse(JSON.stringify(lastCirclePosition))));
         }
-        if (Math.abs(dot.x) > RandomPoints.AREA || Math.abs(dot.y) > RandomPoints.AREA || Math.abs(dot.z) > RandomPoints.AREA) {
-          continue;
-        }
-        lastDot = JSON.parse(JSON.stringify(dot));
-        this.dots.push(JSON.parse(JSON.stringify(lastDot)));
-      }
     }
 
     public name: string = "Random Points";
 
     public transitionToStateAt(t: number): void {
-      // No Nothing
+        // No Nothing
     }
 }

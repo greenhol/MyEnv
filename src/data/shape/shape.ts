@@ -14,15 +14,7 @@ export abstract class Shape {
         return this._visibility;
     }
 
-    public setVisible(visible: boolean) {
+    public set visible(visible: boolean) {
         this._visibility = visible;
-    }
-
-    public show() {
-        this._visibility = true;
-    }
-
-    public hide() {
-        this._visibility = false;
     }
 }
