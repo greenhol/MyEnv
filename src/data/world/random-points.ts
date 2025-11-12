@@ -1,4 +1,3 @@
-import { clone } from '../../utils/clone';
 import { Circle3d } from '../shape/circle';
 import { SpaceCoord } from '../types';
 import { World } from './world';
@@ -20,13 +19,13 @@ export class RandomPoints extends World {
         super()
 
         this.circles.push(new Circle3d({ x: 0, y: 0, z: 0 }));
-        let circlePosition: SpaceCoord = clone<SpaceCoord>(this.circles[0].position);
-        let lastCirclePosition: SpaceCoord = clone<SpaceCoord>(this.circles[0].position);
+        let circlePosition: SpaceCoord = structuredClone(this.circles[0].position);
+        let lastCirclePosition: SpaceCoord = structuredClone(this.circles[0].position);
         let direction: DirectionEnum;
 
         for (let i = 0; i < 1500; i++) {
             direction = Math.floor(Math.random() * 6);
-            circlePosition = clone<SpaceCoord>(lastCirclePosition);
+            circlePosition = structuredClone(lastCirclePosition);
             switch (direction) {
                 case DirectionEnum.UP:
                     circlePosition.y += RandomPoints.DIST;
@@ -52,8 +51,8 @@ export class RandomPoints extends World {
             if (Math.abs(circlePosition.x) > RandomPoints.AREA || Math.abs(circlePosition.y) > RandomPoints.AREA || Math.abs(circlePosition.z) > RandomPoints.AREA) {
                 continue;
             }
-            lastCirclePosition = clone<SpaceCoord>(circlePosition);
-            this.circles.push(new Circle3d(clone<SpaceCoord>(lastCirclePosition)));
+            lastCirclePosition = structuredClone(circlePosition);
+            this.circles.push(new Circle3d(structuredClone(lastCirclePosition)));
         }
     }
 
