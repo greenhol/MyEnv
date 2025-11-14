@@ -1,7 +1,8 @@
 import { select, Selection } from 'd3';
 import { Circle } from './data/shape/circle';
 import { Path } from './data/shape/path';
-import { Shape, ShapeType } from './data/shape/shape';
+import { Rectangle } from './data/shape/rectangle';
+import { ShapeType } from './data/shape/shape';
 import { Collection, Shapes } from './data/shape/shapes';
 import { SerialSubscriptions } from './utils/serial-subscriptions';
 
@@ -53,6 +54,8 @@ export class Stage {
                 case ShapeType.PATH:
                     this.createPaths(id, collection.paths);
                     break;
+                case ShapeType.RECTANGLE:
+                    this.createRectangles(id, collection.rectangles);
             }
         });
         this._created.add(id);
@@ -62,17 +65,20 @@ export class Stage {
         // console.trace('#updateShapes', id);
         this.updateCircles(id, collection.circles);
         this.updatePaths(id, collection.paths);
+        this.updateRectangles(id, collection.rectangles);
         this._created.add(id);
     }
 
-    private createCircles(id: string, circles: Array<Shape>) {
+    // Circles
+    private createCircles(id: string, circles: Array<Circle>) {
         console.log('#createCircles', { id: id, length: circles.length });
-        const type = ShapeType.CIRCLE;
-        this._svgg.selectAll(`${type}.${id}`)
-            .data(circles as Array<Circle>)
+        const svgType = 'circle';
+        this._svgg.selectAll(`${svgType}.${ShapeType.CIRCLE}.${id}`)
+            .data(circles)
             .enter()
-            .append(type)
+            .append(svgType)
             .attr('id', (d: Circle) => d.id)
+            .classed(ShapeType.CIRCLE, true)
             .classed(id, true)
             .style('stroke-width', (d: Circle) => d.style.strokeWidth)
             .style('stroke', (d: Circle) => d.style.stroke)
@@ -86,11 +92,10 @@ export class Stage {
         this._created.add(id);
     }
 
-    private updateCircles(id: string, circles: Array<Shape>) {
-        const type = ShapeType.CIRCLE;
-        this._svgg.selectAll(`${type}.${id}`)
-            .data(circles as Array<Circle>)
-            .classed('shape--invisible', (d: Shape) => !d.isVisible)
+    private updateCircles(id: string, circles: Array<Circle>) {
+        this._svgg.selectAll(`circle.${ShapeType.CIRCLE}.${id}`)
+            .data(circles)
+            .classed('shape--invisible', (d: Circle) => !d.isVisible)
             .style('stroke-width', (d: Circle) => d.style.strokeWidth)
             .style('stroke', (d: Circle) => d.style.stroke)
             .style('stroke-opacity', (d: Circle) => d.style.strokeOpacity)
@@ -101,14 +106,16 @@ export class Stage {
             .attr('r', (d: Circle) => d.attr.r);
     }
 
-    private createPaths(id: string, paths: Array<Shape>) {
+    // Paths
+    private createPaths(id: string, paths: Array<Path>) {
         console.log('#createPaths', { id: id, length: paths.length });
-        const type = ShapeType.PATH;
-        this._svgg.selectAll(`${type}.${id}`)
-            .data(paths as Array<Path>)
+        const svgType = 'path';
+        this._svgg.selectAll(`${svgType}.${ShapeType.PATH}.${id}`)
+            .data(paths)
             .enter()
-            .append(type)
+            .append(svgType)
             .attr('id', (d: Path) => d.id)
+            .classed(ShapeType.PATH, true)
             .classed(id, true)
             .style('fill', 'none')
             .style('stroke-width', (d: Path) => d.style.strokeWidth)
@@ -119,15 +126,47 @@ export class Stage {
         this._created.add(id);
     }
 
-    private updatePaths(id: string, paths: Array<Shape>) {
-        const type = ShapeType.PATH;
-        this._svgg.selectAll(`${type}.${id}`)
-            .data(paths as Array<Path>)
-            .classed('shape--invisible', (d: Shape) => !d.isVisible)
+    private updatePaths(id: string, paths: Array<Path>) {
+        this._svgg.selectAll(`path.${ShapeType.PATH}.${id}`)
+            .data(paths)
+            .classed('shape--invisible', (d: Path) => !d.isVisible)
             .style('stroke-width', (d: Path) => d.style.strokeWidth)
             .style('stroke', (d: Path) => d.style.stroke)
             .style('stroke-opacity', (d: Path) => d.style.strokeOpacity)
             .attr('d', (d: Path) => d.attr.d);
+    }
+
+    // Rectangles
+    private createRectangles(id: string, paths: Array<Rectangle>) {
+        console.log('#createRectangles', { id: id, length: paths.length });
+        const svgType = 'path';
+        this._svgg.selectAll(`${svgType}.${ShapeType.RECTANGLE}.${id}`)
+            .data(paths)
+            .enter()
+            .append(svgType)
+            .attr('id', (d: Rectangle) => d.id)
+            .classed(ShapeType.RECTANGLE, true)
+            .classed(id, true)
+            .style('stroke-width', (d: Rectangle) => d.style.strokeWidth)
+            .style('stroke', (d: Rectangle) => d.style.stroke)
+            .style('stroke-opacity', (d: Rectangle) => d.style.strokeOpacity)
+            .style('fill', (d: Rectangle) => d.style.fill)
+            .style('fill-opacity', (d: Rectangle) => d.style.fillOpacity)
+            .attr('d', (d: Rectangle) => d.attr.d);
+
+        this._created.add(id);
+    }
+
+    private updateRectangles(id: string, paths: Array<Rectangle>) {
+        this._svgg.selectAll(`path.${ShapeType.RECTANGLE}.${id}`)
+            .data(paths)
+            .classed('shape--invisible', (d: Rectangle) => !d.isVisible)
+            .style('stroke-width', (d: Rectangle) => d.style.strokeWidth)
+            .style('stroke', (d: Rectangle) => d.style.stroke)
+            .style('stroke-opacity', (d: Rectangle) => d.style.strokeOpacity)
+            .style('fill', (d: Rectangle) => d.style.fill)
+            .style('fill-opacity', (d: Rectangle) => d.style.fillOpacity)
+            .attr('d', (d: Rectangle) => d.attr.d);
     }
 
     private removeShapes(id: string) {

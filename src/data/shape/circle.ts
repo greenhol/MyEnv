@@ -30,40 +30,15 @@ const defaultStyle: CircleStyle = {
     fillOpacity: 1
 };
 
-export class Circle extends Shape {
-
-    public id = idGenerator.newId(ShapeType.CIRCLE)
-    public type = ShapeType.CIRCLE;
-
-    public style: CircleStyle = defaultStyle;
-
-    public attr: CircleAttr;
-
-    constructor(x: number, y: number, r: number) {
-        super();
-        this.attr = {
-            cx: x,
-            cy: y,
-            r: r,
-        }
-    }
-
-    public setPosition(x: number, y: number, r: number) {
-        this.attr.cx = x;
-        this.attr.cy = y;
-        this.attr.r = r;
-    }
-}
-
 export class Circle3d implements Circle3dAttributes {
     private _position: SpaceCoord;
     private _radius: number;
     private _style: CircleStyle;
 
-    constructor(position: SpaceCoord, radius?: number, style?: CircleStyle) {
+    constructor(position: SpaceCoord, radius: number = 1, style: CircleStyle = defaultStyle) {
         this.position = position;
-        this.radius = radius != null ? radius : 1;
-        this.style = style != null ? style : defaultStyle;
+        this.radius = radius;
+        this.style = style;
     }
 
     public get position() {
@@ -88,5 +63,30 @@ export class Circle3d implements Circle3dAttributes {
 
     public set style(style: CircleStyle) {
         this._style = style;
+    }
+}
+
+export class Circle extends Shape {
+
+    public id = idGenerator.newId(ShapeType.CIRCLE)
+    public type = ShapeType.CIRCLE;
+
+    public style: CircleStyle = defaultStyle;
+
+    public attr: CircleAttr;
+
+    constructor(x: number, y: number, r: number) {
+        super();
+        this.attr = {
+            cx: x,
+            cy: y,
+            r: r,
+        }
+    }
+
+    public setPosition(x: number, y: number, r: number) {
+        this.attr.cx = x;
+        this.attr.cy = y;
+        this.attr.r = r;
     }
 }

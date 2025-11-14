@@ -1,30 +1,34 @@
-import { Stage } from './stage';
-import { ShapeType } from './data/shape/shape';
-import { CartesianAxes } from './data/world/cartesian-axes';
-import { Projector } from './projector';
-import { Subject, interval, take, takeUntil, timer } from 'rxjs';
-import { BellCurve } from './data/world/bell-curve';
-import { BouncingParticles } from './data/world/bouncing-particles';
-import { World } from './data/world/world';
-import { RandomPoints } from './data/world/random-points';
+import { Subject, interval, takeUntil, timer } from 'rxjs';
 import { Camera } from './camera';
 import { CameraKeyboardConnector } from './cameraKeyboardConnector';
+import { ModuleConfig } from './config/module-config';
+import { ShapeType } from './data/shape/shape';
+import { perspectiveToString } from './data/types';
+import { BellCurve } from './data/world/bell-curve';
+import { BouncingParticles } from './data/world/bouncing-particles';
+import { CartesianAxes } from './data/world/cartesian-axes';
 import { Chart3DLifeTable } from './data/world/chart3DLifeTable';
-import { Cube } from './data/world/cube';
+import { DoublePendulumLive } from './data/world/double-pendulum-live';
 import { Grid } from './data/world/grid';
 import { HilbertCurve } from './data/world/hilbert-curve';
-import { DoublePendulumLive } from './data/world/double-pendulum-live';
-import { ModuleConfig } from './config/module-config';
-import { perspectiveToString } from './data/types';
-import { SerialSubscription } from './utils/serial-subscription';
+import { Playground } from './data/world/playground';
+import { RandomPoints } from './data/world/random-points';
+import { World } from './data/world/world';
+import { Projector } from './projector';
+import { Stage } from './stage';
 import { longPressHandler } from './utils/long-press-handler';
+import { SerialSubscription } from './utils/serial-subscription';
 
 interface MainConfig {
     currentWorldId: number,
+    worldTick: number,
 }
 
 const MAIN_CONFIG = new ModuleConfig<MainConfig>(
-    { currentWorldId: 1 },
+    {
+        currentWorldId: 1,
+        worldTick: 40,
+    },
     "mainConfig",
 )
 
@@ -45,7 +49,7 @@ const cameraInfoArea = document.getElementById("cameraInfo");
 function createWorldById(worldId: number): World {
     switch (worldId) {
         case 1: return new CartesianAxes();
-        case 2: return new Cube();
+        case 2: return new Playground();
         case 3: return new Grid();
         case 4: return new BellCurve();
         case 5: return new BouncingParticles();
@@ -88,8 +92,8 @@ function runWorld() {
     world.mountCamera(camera);
     updateWorldTitle(world.name);
     const projector = new Projector(world, camera);
-    stage.registerShapes(projector.shapes, new Set([ShapeType.PATH, ShapeType.CIRCLE]));
-    interval(40)
+    stage.registerShapes(projector.shapes, new Set([ShapeType.RECTANGLE, ShapeType.PATH, ShapeType.CIRCLE]));
+    interval(MAIN_CONFIG.data.worldTick)
         .pipe(takeUntil(abortWorldTick$))
         .subscribe({
             next: () => {

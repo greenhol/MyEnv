@@ -3,12 +3,14 @@ import { Camera } from '../../camera';
 import { SerialSubscription } from '../../utils/serial-subscription';
 import { Circle3d } from '../shape/circle';
 import { Path3d } from '../shape/path';
-import { Perspective, defaultPerspective } from '../types';
+import { Rectangle3d } from '../shape/rectangle';
+import { Perspective, createDefaultPerspective } from '../types';
 import { ModuleConfig } from './../../config/module-config';
 
 export interface WorldState {
     circles: Circle3d[];
     paths: Path3d[];
+    rectangles: Rectangle3d[];
 }
 
 export interface WorldConfig {
@@ -23,14 +25,16 @@ export abstract class World {
 
     protected circles: Circle3d[] = [];
     protected paths: Path3d[] = [];
+    protected rectangles: Rectangle3d[] = [];
 
     private _state$ = new BehaviorSubject<WorldState>({
         circles: this.circles,
         paths: this.paths,
+        rectangles: this.rectangles,
     });
     public state$: Observable<WorldState> = this._state$;
 
-    public config = new ModuleConfig<WorldConfig>({ cameraPerspective: defaultPerspective });
+    public config = new ModuleConfig<WorldConfig>({ cameraPerspective: createDefaultPerspective() });
 
     public abstract name: string;
 
@@ -70,6 +74,7 @@ export abstract class World {
         this._state$.next({
             circles: this.circles,
             paths: this.paths,
+            rectangles: this.rectangles,
         });
     }
 }

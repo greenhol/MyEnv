@@ -24,36 +24,15 @@ const defaultStyle = {
     strokeOpacity: 1,
 };
 
-export class Path extends Shape {
-
-    public id = idGenerator.newId(ShapeType.PATH)
-    public type = ShapeType.PATH;
-
-    public style: PathStyle = defaultStyle;
-
-    public attr: PathAttr;
-
-    constructor(d: string) {
-        super();
-        this.attr = {
-            d: d,
-        }
-    }
-
-    public setPath(d: string) {
-        this.attr.d = d;
-    }
-}
-
 export class Path3d implements Path3dAttributes {
     private _path: SpaceCoord[];
     private _close: boolean;
     private _style: PathStyle;
 
-    constructor(path: SpaceCoord[], close?: boolean, style?: PathStyle) {
+    constructor(path: SpaceCoord[], close: boolean = false, style: PathStyle = defaultStyle) {
         this.path = path;
-        this.close = close != null ? close : false;
-        this.style = style != null ? style : defaultStyle;
+        this.close = close;
+        this.style = style;
     }
 
     public get path() {
@@ -78,5 +57,26 @@ export class Path3d implements Path3dAttributes {
 
     public set style(style: PathStyle) {
         this._style = style;
+    }
+}
+
+export class Path extends Shape {
+
+    public id = idGenerator.newId(ShapeType.PATH)
+    public type = ShapeType.PATH;
+
+    public style: PathStyle = defaultStyle;
+
+    public attr: PathAttr;
+
+    constructor(d: string) {
+        super();
+        this.attr = {
+            d: d,
+        }
+    }
+
+    public setPath(d: string) {
+        this.attr.d = d;
     }
 }

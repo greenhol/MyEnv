@@ -1,16 +1,43 @@
+export enum AxisEnum {
+    'X',
+    'Y',
+    'Z'
+}
+
 export interface SpaceCoord {
     x: number;
     y: number;
     z: number;
 }
 
-export const ONE_DEGREE = Math.PI / 180;
-
 export interface Perspective {
     position: SpaceCoord;
     angleX: number;
     angleY: number;
     angleZ: number;
+}
+
+export const ONE_DEGREE = Math.PI / 180;
+
+export function createOrigin(): SpaceCoord {
+    return { x: 0, y: 0, z: 0 };
+}
+
+export function createDefaultPerspective(): Perspective {
+    return {
+        position: { x: 0, y: 0, z: -7.5 },
+        angleX: 45 * ONE_DEGREE,
+        angleY: 45 * ONE_DEGREE,
+        angleZ: 0 * ONE_DEGREE,
+    }
+};
+
+export function addSpaceCoord(a: SpaceCoord, b: SpaceCoord): SpaceCoord {
+    return {
+        x: a.x + b.x,
+        y: a.y + b.y,
+        z: a.z + b.z,
+    }
 }
 
 export function perspectiveToString(perspective: Perspective): string {
@@ -20,10 +47,3 @@ export function perspectiveToString(perspective: Perspective): string {
     const angleZ = (perspective.angleZ * 180 / Math.PI).toFixed(0);
     return `Perspective: Position (${position}), Angle-X ${angleX}°, Angle-Y ${angleY}°, Angle-Z ${angleZ}°)`;
 }
-
-export const defaultPerspective: Perspective = {
-    position: { x: 0, y: 0, z: -7.5 },
-    angleX: 45 * ONE_DEGREE,
-    angleY: 45 * ONE_DEGREE,
-    angleZ: 0 * ONE_DEGREE,
-};

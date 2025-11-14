@@ -1,4 +1,5 @@
 import { Path3d } from '../shape/path';
+import { createOrigin } from '../types';
 import { World } from './world';
 
 export class HilbertCurve extends World {
@@ -14,7 +15,7 @@ export class HilbertCurve extends World {
         super();
 
         this.hilbert = new Hilbert3D(1, AnchorAxisOrder.XYZ);
-        this.paths = [new Path3d([{ x: 0, y: 0, z: 0 }])];
+        this.paths = [new Path3d([createOrigin()])];
         this.init();
     }
 

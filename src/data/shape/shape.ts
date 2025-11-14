@@ -1,13 +1,13 @@
 export enum ShapeType {
-    CIRCLE = 'circle',
-    RECTANGLE = 'rect',
-    PATH = 'path',
+    CIRCLE = 'CIRCLE',
+    RECTANGLE = 'RECTANGLE',
+    PATH = 'PATH',
 }
 
 export abstract class Shape {
     public abstract id: string;
     public abstract type: ShapeType;
-    
+
     private _visibility = true;
 
     public get isVisible(): boolean {

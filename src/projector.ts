@@ -1,10 +1,11 @@
 import { skip, take } from 'rxjs';
 import { Camera } from './camera';
-import { AxisEnum, IdentityMatrix, Matrix, RotaryMatrix, TranslateMatrix } from './data/matrix/matrix';
+import { IdentityMatrix4, Matrix4, RotaryMatrix4, TranslateMatrix4 } from './data/matrix/matrix-4';
 import { Circle, Circle3dAttributes } from './data/shape/circle';
 import { Path, Path3dAttributes } from './data/shape/path';
+import { Rectangle, Rectangle3dAttributes } from './data/shape/rectangle';
 import { Shapes } from './data/shape/shapes';
-import { SpaceCoord } from './data/types';
+import { AxisEnum, SpaceCoord } from './data/types';
 import { World, WorldState } from './data/world/world';
 
 interface PlaneCoord {
@@ -27,9 +28,15 @@ interface ProjectedPath extends Path3dAttributes {
     dist: number;
 }
 
+interface ProjectedRectangle extends Rectangle3dAttributes {
+    d: string;
+    dist: number;
+}
+
 interface ProjectedData {
     circles: ProjectedCircle[];
     paths: ProjectedPath[];
+    rectangles: ProjectedRectangle[];
 }
 
 const STAGE_WIDTH = 1280;
@@ -98,21 +105,21 @@ export class Projector {
 
     private createData(worldState: WorldState): ProjectedData {
 
-        const rxMatrix = new RotaryMatrix(AxisEnum.X, this._camera.angleX);
-        const ryMatrix = new RotaryMatrix(AxisEnum.Y, this._camera.angleY);
-        const rzMatrix = new RotaryMatrix(AxisEnum.Z, this._camera.angleZ);
-        const tMatrix = new TranslateMatrix(this._camera.position);
+        const rxMatrix = new RotaryMatrix4(AxisEnum.X, this._camera.angleX);
+        const ryMatrix = new RotaryMatrix4(AxisEnum.Y, this._camera.angleY);
+        const rzMatrix = new RotaryMatrix4(AxisEnum.Z, this._camera.angleZ);
+        const tMatrix = new TranslateMatrix4(this._camera.position);
 
-        let myMatrix = new IdentityMatrix();
-        myMatrix = Matrix.multiply(myMatrix, rzMatrix);
-        myMatrix = Matrix.multiply(myMatrix, ryMatrix);
-        myMatrix = Matrix.multiply(myMatrix, rxMatrix);
-        myMatrix = Matrix.multiply(myMatrix, tMatrix);
-        myMatrix = myMatrix.inv!;
+        let transformationMatrix = new IdentityMatrix4();
+        transformationMatrix = Matrix4.multiply(transformationMatrix, rzMatrix);
+        transformationMatrix = Matrix4.multiply(transformationMatrix, ryMatrix);
+        transformationMatrix = Matrix4.multiply(transformationMatrix, rxMatrix);
+        transformationMatrix = Matrix4.multiply(transformationMatrix, tMatrix);
+        transformationMatrix = transformationMatrix.inv!;
 
-        // Dots
+        // Circles
         let projectedCircles: ProjectedCircle[] = worldState.circles.map((circle: Circle3dAttributes): ProjectedCircle => {
-            let v = myMatrix.vectorMultiply(circle.position);
+            let v = transformationMatrix.vectorMultiply(circle.position);
             return {
                 pixel: Projector.spaceToPixel(v),
                 dist: Projector.distanceToCamera(v),
@@ -128,34 +135,55 @@ export class Projector {
 
         projectedCircles.sort((a: ProjectedCircle, b: ProjectedCircle) => a.dist - b.dist);
 
-        let projectedPaths: ProjectedPath[] = worldState.paths.map((spacePath: Path3dAttributes): ProjectedPath => {
-            let point = Projector.spaceToPixel(myMatrix.vectorMultiply(spacePath.path[0]));
-            let minDist = Projector.distanceToCamera(myMatrix.vectorMultiply(spacePath.path[0]));
+        // Paths
+        let projectedPaths: ProjectedPath[] = worldState.paths.map((path: Path3dAttributes): ProjectedPath => {
+            let point = Projector.spaceToPixel(transformationMatrix.vectorMultiply(path.path[0]));
+            let minDist = Projector.distanceToCamera(transformationMatrix.vectorMultiply(path.path[0]));
             let p = 'M' + point.left + ' ' + point.top + ' ';
-            for (let i = 1; i < spacePath.path.length; i++) {
-                point = Projector.spaceToPixel(myMatrix.vectorMultiply(spacePath.path[i]));
-                let dist = Projector.distanceToCamera(myMatrix.vectorMultiply(spacePath.path[i]));
+            for (let i = 1; i < path.path.length; i++) {
+                point = Projector.spaceToPixel(transformationMatrix.vectorMultiply(path.path[i]));
+                let dist = Projector.distanceToCamera(transformationMatrix.vectorMultiply(path.path[i]));
                 minDist = Math.min(minDist, dist);
                 p += 'L' + point.left + ' ' + point.top + ' ';
             }
             return {
-                path: spacePath.path,
-                close: spacePath.close,
-                d: spacePath.close ? p + 'Z' : p,
+                path: path.path,
+                close: path.close,
+                d: path.close ? p + 'Z' : p,
                 dist: minDist,
-                style: spacePath.style,
+                style: path.style,
+            };
+        });
+
+        // Rectangles
+        let projectedRectangles: ProjectedRectangle[] = worldState.rectangles.map((rectangle: Rectangle3dAttributes): ProjectedRectangle => {
+            let point = Projector.spaceToPixel(transformationMatrix.vectorMultiply(rectangle.path[0]));
+            let minDist = Projector.distanceToCamera(transformationMatrix.vectorMultiply(rectangle.path[0]));
+            let p = 'M' + point.left + ' ' + point.top + ' ';
+            for (let i = 1; i < rectangle.path.length; i++) {
+                point = Projector.spaceToPixel(transformationMatrix.vectorMultiply(rectangle.path[i]));
+                let dist = Projector.distanceToCamera(transformationMatrix.vectorMultiply(rectangle.path[i]));
+                minDist = Math.min(minDist, dist);
+                p += 'L' + point.left + ' ' + point.top + ' ';
+            }
+            return {
+                path: rectangle.path,
+                d: p + 'Z',
+                dist: minDist,
+                style: rectangle.style,
             };
         });
 
         return {
             circles: projectedCircles,
             paths: projectedPaths,
+            rectangles: projectedRectangles,
         };
     }
 
     private createShapes(data: ProjectedData) {
         this._shapes = new Shapes(
-            'projected',
+            'PRJ',
             {
                 circles: data.circles.map((circle: ProjectedCircle): Circle => {
                     return new Circle(
@@ -166,7 +194,10 @@ export class Projector {
                 }),
                 paths: data.paths.map((path: ProjectedPath): Path => {
                     return new Path(path.d)
-                })
+                }),
+                rectangles: data.rectangles.map((rectangle: ProjectedRectangle): Rectangle => {
+                    return new Rectangle(rectangle.d);
+                }),
             },
         );
     }
@@ -185,8 +216,15 @@ export class Projector {
             });
             shapes.paths.forEach((path, index) => {
                 let projectedPath = data.paths[index];
-                path.setPath(projectedPath.d)
+                path.setPath(projectedPath.d);
+                path.style = projectedPath.style;
                 path.visible = projectedPath.dist > 0;
+            });
+            shapes.rectangles.forEach((rectangle, index) => {
+                let projectedRectangle = data.rectangles[index];
+                rectangle.setPath(projectedRectangle.d);
+                rectangle.style = projectedRectangle.style;
+                rectangle.visible = projectedRectangle.dist > 0;
             });
         });
     }

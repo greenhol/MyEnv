@@ -1,10 +1,9 @@
 import { BehaviorSubject } from 'rxjs';
-import { Perspective, ONE_DEGREE, SpaceCoord, defaultPerspective } from './data/types';
-import { ModuleConfig } from './config/module-config';
+import { Perspective, createDefaultPerspective } from './data/types';
 
 export class Camera {
 
-    public state$ = new BehaviorSubject<Perspective>(defaultPerspective);
+    public state$ = new BehaviorSubject<Perspective>(createDefaultPerspective());
 
     public get position() {
         return this.state$.getValue().position;

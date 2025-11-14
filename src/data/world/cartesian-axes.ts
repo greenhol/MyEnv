@@ -1,6 +1,6 @@
 import { ModuleConfig } from '../../config/module-config';
 import { Circle3d, CircleStyle } from '../shape/circle';
-import { defaultPerspective } from '../types';
+import { createDefaultPerspective, createOrigin } from '../types';
 import { World, WorldConfig } from './world';
 
 export class CartesianAxes extends World {
@@ -50,7 +50,7 @@ export class CartesianAxes extends World {
     }
 
     override config = new ModuleConfig<WorldConfig>(
-        { cameraPerspective: defaultPerspective },
+        { cameraPerspective: createDefaultPerspective() },
         "cartesianAxesConfig",
     );
 
@@ -81,7 +81,7 @@ export class CartesianAxes extends World {
                 break;
         }
 
-        this.circles = [ new Circle3d({ x: 0, y: 0, z: 0 }, 2, this.styleBlack) ];
+        this.circles = [new Circle3d(createOrigin(), 2, this.styleBlack)];
         for (let i = CartesianAxes.DIST; i <= CartesianAxes.SIZE; i += CartesianAxes.DIST) {
             this.circles.push(new Circle3d({ x: -i, y: 0, z: 0 }, 1, style1));
             this.circles.push(new Circle3d({ x: i, y: 0, z: 0 }, 1, style1));
