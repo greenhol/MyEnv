@@ -1,12 +1,13 @@
 import { skip, take } from 'rxjs';
-import { Camera } from './camera';
-import { IdentityMatrix4, Matrix4, RotaryMatrix4, TranslateMatrix4 } from '../data/matrix/matrix-4';
 import { Circle, Circle3dAttributes } from '../data/shape/circle';
 import { Path, Path3dAttributes } from '../data/shape/path';
 import { Rectangle, Rectangle3dAttributes } from '../data/shape/rectangle';
 import { Shapes } from '../data/shape/shapes';
-import { AxisEnum, SpaceCoord } from '../data/types';
 import { World, WorldState } from '../data/world/world';
+import { AxisEnum } from '../types/axis-enum';
+import { IdentityMatrix4, Matrix4, RotaryMatrix4, TranslateMatrix4 } from '../types/matrix/matrix-4';
+import { SpaceCoord } from '../types/space-coord';
+import { Camera } from './camera';
 
 interface PlaneCoord {
     x: number;

@@ -1,5 +1,7 @@
+import { ModuleConfig } from '../../config/module-config';
+import { ONE_DEGREE } from '../../types/constants';
 import { Circle3d } from '../shape/circle';
-import { World } from './world';
+import { World, WorldConfig } from './world';
 
 export class Grid extends World {
     private static SIZE = 1;
@@ -17,6 +19,18 @@ export class Grid extends World {
         }
         this.init();
     }
+
+    override config = new ModuleConfig<WorldConfig>(
+        {
+            cameraPerspective: {
+                position: { x: 0, y: 0, z: -3 },
+                angleX: 30 * ONE_DEGREE,
+                angleY: 60 * ONE_DEGREE,
+                angleZ: 0,
+            },
+        },
+        "gridConfig",
+    );
 
     public name: string = "Grid";
 

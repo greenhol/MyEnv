@@ -1,5 +1,5 @@
+import { SpaceCoord } from '../../types/space-coord';
 import { idGenerator } from '../../utils/unique';
-import { SpaceCoord } from '../types';
 import { Shape, ShapeType } from './shape';
 
 export interface Path3dAttributes {

@@ -1,5 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
-import { createDefaultPerspective, Perspective } from '../data/types';
+import { createDefaultPerspective, Perspective } from '../types/perspective';
 
 export class Camera {
 

@@ -1,7 +1,8 @@
 import { ModuleConfig } from '../../config/module-config';
+import { ONE_DEGREE } from '../../types/constants';
+import { createOrigin, SpaceCoord } from '../../types/space-coord';
 import { Circle3d } from '../shape/circle';
 import { Rectangle3d, RectangleStyle } from '../shape/rectangle';
-import { createOrigin, ONE_DEGREE, SpaceCoord } from '../types';
 import { World, WorldConfig } from './world';
 
 interface Particle {

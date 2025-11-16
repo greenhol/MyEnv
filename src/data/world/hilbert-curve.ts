@@ -1,6 +1,8 @@
+import { ModuleConfig } from '../../config/module-config';
+import { ONE_DEGREE } from '../../types/constants';
+import { createOrigin } from '../../types/space-coord';
 import { Path3d } from '../shape/path';
-import { createOrigin } from '../types';
-import { World } from './world';
+import { World, WorldConfig } from './world';
 
 export class HilbertCurve extends World {
 
@@ -18,6 +20,18 @@ export class HilbertCurve extends World {
         this.paths = [new Path3d([createOrigin()])];
         this.init();
     }
+
+    override config = new ModuleConfig<WorldConfig>(
+        {
+            cameraPerspective: {
+                position: { x: -1, y: 4.7, z: -5 },
+                angleX: 25 * ONE_DEGREE,
+                angleY: 50 * ONE_DEGREE,
+                angleZ: 0,
+            },
+        },
+        "hilbertCurveConfig",
+    );
 
     public name: string = "Hilbert Curve";
 

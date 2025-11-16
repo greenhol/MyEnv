@@ -1,6 +1,6 @@
 import { ModuleConfig } from '../../config/module-config';
 import { Circle3d } from '../shape/circle';
-import { ONE_DEGREE } from '../types';
+import { ONE_DEGREE } from '../../types/constants';
 import { World, WorldConfig } from './world';
 
 export class BellCurve extends World {

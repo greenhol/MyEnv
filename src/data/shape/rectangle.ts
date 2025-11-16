@@ -1,6 +1,8 @@
+import { AxisEnum } from '../../types/axis-enum';
+import { ONE_DEGREE } from '../../types/constants';
+import { IdentityMatrix3, Matrix3, RotaryMatrix3 } from '../../types/matrix/matrix-3';
+import { addSpaceCoords, SpaceCoord } from '../../types/space-coord';
 import { idGenerator } from '../../utils/unique';
-import { IdentityMatrix3, Matrix3, RotaryMatrix3 } from '../matrix/matrix-3';
-import { addSpaceCoord, AxisEnum, ONE_DEGREE, SpaceCoord } from '../types';
 import { Shape, ShapeType } from './shape';
 
 export interface Rectangle3dAttributes {
@@ -124,7 +126,7 @@ export class Rectangle3d implements Rectangle3dAttributes {
         ];
 
         this.path = corners.map((coord: SpaceCoord): SpaceCoord => {
-            return addSpaceCoord(transformationMatrix.vectorMultiply(coord), this._position);
+            return addSpaceCoords(transformationMatrix.vectorMultiply(coord), this._position);
         });
     }
 }

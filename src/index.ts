@@ -1,7 +1,7 @@
 import { Subject, interval, takeUntil, timer } from 'rxjs';
+import { configVersionCheck } from './config/config-version-check';
 import { ModuleConfig } from './config/module-config';
 import { ShapeType } from './data/shape/shape';
-import { perspectiveToString } from './data/types';
 import { BellCurve } from './data/world/bell-curve';
 import { BouncingParticles } from './data/world/bouncing-particles';
 import { CartesianAxes } from './data/world/cartesian-axes';
@@ -16,9 +16,9 @@ import { Camera } from './stage/camera';
 import { CameraKeyboardConnector } from './stage/cameraKeyboardConnector';
 import { Projector } from './stage/projector';
 import { Stage } from './stage/stage';
+import { perspectiveToString } from './types/perspective';
 import { longPressHandler } from './utils/long-press-handler';
 import { SerialSubscription } from './utils/serial-subscription';
-import { configVersionCheck } from './config/config-version-check';
 
 declare const APP_VERSION: string;
 console.log(`#init - MyEnv 3D SVG - Version:${APP_VERSION}`);

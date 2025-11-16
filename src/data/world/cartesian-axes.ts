@@ -1,6 +1,7 @@
 import { ModuleConfig } from '../../config/module-config';
+import { createDefaultPerspective } from '../../types/perspective';
+import { createOrigin } from '../../types/space-coord';
 import { Circle3d, CircleStyle } from '../shape/circle';
-import { createDefaultPerspective, createOrigin } from '../types';
 import { World, WorldConfig } from './world';
 
 export class CartesianAxes extends World {

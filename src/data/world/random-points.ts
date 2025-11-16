@@ -1,6 +1,8 @@
+import { ModuleConfig } from '../../config/module-config';
+import { createDefaultPerspective } from '../../types/perspective';
+import { createOrigin, SpaceCoord } from '../../types/space-coord';
 import { Circle3d } from '../shape/circle';
-import { createOrigin, SpaceCoord } from '../types';
-import { World } from './world';
+import { World, WorldConfig } from './world';
 
 enum DirectionEnum {
     'UP',
@@ -55,6 +57,11 @@ export class RandomPoints extends World {
             this.circles.push(new Circle3d(structuredClone(lastCirclePosition)));
         }
     }
+
+    override config = new ModuleConfig<WorldConfig>(
+        { cameraPerspective: createDefaultPerspective() },
+        "randomPointsConfig",
+    );
 
     public name: string = "Random Points";
 

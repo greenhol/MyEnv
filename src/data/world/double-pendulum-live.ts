@@ -1,7 +1,9 @@
 import { ModuleConfig } from '../../config/module-config';
+import { ONE_DEGREE } from '../../types/constants';
+import { Perspective } from '../../types/perspective';
+import { SpaceCoord } from '../../types/space-coord';
 import { Path3d } from '../shape/path';
 import { Circle3d, CircleStyle } from './../shape/circle';
-import { ONE_DEGREE, Perspective, SpaceCoord } from './../types';
 import { World, WorldConfig } from './world';
 
 interface DoublePendulumConfig extends WorldConfig {

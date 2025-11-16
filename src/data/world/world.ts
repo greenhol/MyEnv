@@ -1,10 +1,10 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Camera } from '../../stage/camera';
+import { createDefaultPerspective, Perspective } from '../../types/perspective';
 import { SerialSubscription } from '../../utils/serial-subscription';
 import { Circle3d } from '../shape/circle';
 import { Path3d } from '../shape/path';
 import { Rectangle3d } from '../shape/rectangle';
-import { Perspective, createDefaultPerspective } from '../types';
 import { ModuleConfig } from './../../config/module-config';
 
 export interface WorldState {
