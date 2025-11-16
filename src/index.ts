@@ -19,6 +19,9 @@ import { Stage } from './stage';
 import { longPressHandler } from './utils/long-press-handler';
 import { SerialSubscription } from './utils/serial-subscription';
 
+export const APP_VERSION = (window as any).APP_VERSION;
+console.log(`MyEnv 3D SVG - Version:${APP_VERSION}`);
+
 interface MainConfig {
     currentWorldId: number,
     worldTick: number,

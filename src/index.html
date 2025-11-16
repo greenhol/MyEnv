@@ -3,8 +3,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="app-version" content="<%= htmlWebpackPlugin.options.version %>">
+    <script>
+        window.APP_VERSION = '<%= htmlWebpackPlugin.options.version %>';
+    </script>
     <title>3D SVG</title>
-    <link rel="stylesheet" type="text/css" href="index.css" />
+    <link rel="stylesheet" type="text/css" href="index.css?v=<%= htmlWebpackPlugin.options.version %>" />
 </head>
 <body>
     <div id="main"></div>
@@ -14,6 +18,6 @@
     </div>
     <div id="virtual-keyboard-container" />
 
-    <script src="bundle.js"></script>
+    <script src="bundle.js?v=<%= htmlWebpackPlugin.options.version %>"></script>
 </body>
 </html>
