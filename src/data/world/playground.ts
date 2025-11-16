@@ -39,7 +39,7 @@ export class Playground extends World {
 
     override config = new ModuleConfig<WorldConfig>(
         { cameraPerspective: createDefaultPerspective() },
-        "plsygroundConfig",
+        "playgroundConfig",
     );
 
     public name: string = "Playground";

@@ -28,6 +28,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: './src/index.html',
             version: packageJson.version,
+            inject: false,
         }),
         new CopyWebpackPlugin({
             patterns: [
