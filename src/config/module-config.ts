@@ -14,7 +14,7 @@ export class ModuleConfig<T> {
         this._storageKey = storageKey;
         this._persistable = !!storageKey;
         this._storageType = storageType;
-
+        
         if (!this.load()) {
             this.data = { ...this._initialConfig };
         }

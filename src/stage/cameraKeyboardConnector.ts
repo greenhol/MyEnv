@@ -1,5 +1,5 @@
 import { Camera } from './camera';
-import { ONE_DEGREE } from './data/types';
+import { ONE_DEGREE } from '../data/types';
 
 enum ValidKeys {
     W = 'w',

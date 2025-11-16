@@ -1,10 +1,10 @@
 import { select, Selection } from 'd3';
-import { Circle } from './data/shape/circle';
-import { Path } from './data/shape/path';
-import { Rectangle } from './data/shape/rectangle';
-import { ShapeType } from './data/shape/shape';
-import { Collection, Shapes } from './data/shape/shapes';
-import { SerialSubscriptions } from './utils/serial-subscriptions';
+import { Circle } from '../data/shape/circle';
+import { Path } from '../data/shape/path';
+import { Rectangle } from '../data/shape/rectangle';
+import { ShapeType } from '../data/shape/shape';
+import { Collection, Shapes } from '../data/shape/shapes';
+import { SerialSubscriptions } from '../utils/serial-subscriptions';
 
 export class Stage {
 

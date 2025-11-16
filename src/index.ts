@@ -1,6 +1,4 @@
 import { Subject, interval, takeUntil, timer } from 'rxjs';
-import { Camera } from './camera';
-import { CameraKeyboardConnector } from './cameraKeyboardConnector';
 import { ModuleConfig } from './config/module-config';
 import { ShapeType } from './data/shape/shape';
 import { perspectiveToString } from './data/types';
@@ -14,13 +12,16 @@ import { HilbertCurve } from './data/world/hilbert-curve';
 import { Playground } from './data/world/playground';
 import { RandomPoints } from './data/world/random-points';
 import { World } from './data/world/world';
-import { Projector } from './projector';
-import { Stage } from './stage';
+import { Camera } from './stage/camera';
+import { CameraKeyboardConnector } from './stage/cameraKeyboardConnector';
+import { Projector } from './stage/projector';
+import { Stage } from './stage/stage';
 import { longPressHandler } from './utils/long-press-handler';
 import { SerialSubscription } from './utils/serial-subscription';
+import { configVersionCheck } from './config/config-version-check';
 
-export const APP_VERSION = (window as any).APP_VERSION;
-console.log(`MyEnv 3D SVG - Version:${APP_VERSION}`);
+declare const APP_VERSION: string;
+console.log(`#init - MyEnv 3D SVG - Version:${APP_VERSION}`);
 
 interface MainConfig {
     currentWorldId: number,
@@ -68,6 +69,7 @@ function createWorldById(worldId: number): World {
 }
 
 function init() {
+    configVersionCheck(APP_VERSION);
     appendVirtualKeyboard();
     runWorld();
 }

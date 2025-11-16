@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Camera } from '../../camera';
+import { Camera } from '../../stage/camera';
 import { SerialSubscription } from '../../utils/serial-subscription';
 import { Circle3d } from '../shape/circle';
 import { Path3d } from '../shape/path';
