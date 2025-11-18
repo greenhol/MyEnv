@@ -36,7 +36,6 @@ module.exports = {
         }),
         new CopyWebpackPlugin({
             patterns: [
-                { from: 'src/virtual-keyboard.html', to: 'virtual-keyboard.html' },
                 { from: 'src/index.css', to: 'index.css' },
             ],
         }),
